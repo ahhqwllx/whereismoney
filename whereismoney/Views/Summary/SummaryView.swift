@@ -199,10 +199,10 @@ private struct PeriodSummaryCard: View {
                 metricItem(label: "期末净资产", value: summary.endNet, color: AppTheme.text)
             }
 
-            // 资产/负债均值
+            // 资产/负债均值 —— 资产均值左对齐，负债均值右对齐，整体更协调
             HStack(spacing: 8) {
-                metricItem(label: "资产均值", value: summary.avgTotalAssets, color: AppTheme.asset)
-                metricItem(label: "负债均值", value: summary.avgTotalLiabilities, color: AppTheme.liability)
+                metricItem(label: "资产均值", value: summary.avgTotalAssets, color: AppTheme.asset, alignment: .leading)
+                metricItem(label: "负债均值", value: summary.avgTotalLiabilities, color: AppTheme.liability, alignment: .trailing)
             }
         }
         .padding(16)
@@ -214,7 +214,7 @@ private struct PeriodSummaryCard: View {
         )
     }
 
-    private func metricItem(label: String, value: Double, color: Color, isSigned: Bool = false) -> some View {
+    private func metricItem(label: String, value: Double, color: Color, isSigned: Bool = false, alignment: Alignment = .leading) -> some View {
         VStack(spacing: 4) {
             Text(label)
                 .font(.system(size: 10))
@@ -225,6 +225,6 @@ private struct PeriodSummaryCard: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity, alignment: alignment)
     }
 }

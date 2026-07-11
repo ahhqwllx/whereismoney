@@ -126,13 +126,13 @@ private struct RecordRow: View {
 
             // 总资产 / 总负债 / 负债率
             HStack(spacing: 8) {
-                Label(MoneyFormatter.compact(record.totalAssets), systemImage: "arrow.up.right.circle.fill")
+                Label(MoneyFormatter.compact(record.totalAssets), systemImage: "plus.circle.fill")
                     .labelStyle(.titleAndIcon)
                     .font(.caption)
                     .foregroundStyle(AppTheme.asset)
                     .lineLimit(1)
 
-                Label(MoneyFormatter.compact(record.totalLiabilities), systemImage: "arrow.down.right.circle.fill")
+                Label(MoneyFormatter.compact(record.totalLiabilities), systemImage: "minus.circle.fill")
                     .labelStyle(.titleAndIcon)
                     .font(.caption)
                     .foregroundStyle(AppTheme.liability)

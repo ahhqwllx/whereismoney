@@ -32,7 +32,7 @@ targets:
     info:
       path: whereismoney/Info.plist
       properties:
-        CFBundleDisplayName: 财务分析
+        CFBundleDisplayName: whereismoney
         CFBundleShortVersionString: "1.0.0"
         CFBundleVersion: "1"
         UILaunchScreen:

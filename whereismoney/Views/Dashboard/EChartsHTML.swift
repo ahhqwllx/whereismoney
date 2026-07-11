@@ -27,18 +27,31 @@ const BORDER = "#2a333d";
 let chart = echarts.init(document.getElementById('chart'));
 chart.setOption({ backgroundColor: 'transparent' });
 
+// 是否全屏模式（影响边距和 dataZoom 显示比例）
+let isFullscreen = false;
+
 // 监听窗口大小变化
 window.addEventListener('resize', () => chart.resize());
 
-function renderChart(type, data) {
+function renderChart(type, data, fullscreen) {
+    isFullscreen = !!fullscreen;
     if (type === 'netAsset') renderNetAsset(data);
     else if (type === 'assetStack') renderStack(data, 'asset');
     else if (type === 'liabStack') renderStack(data, 'liab');
 }
 
+// 计算默认显示范围：非全屏显示最近 40%，全屏显示全部
+function defaultRange(count) {
+    if (isFullscreen || count <= 8) return [0, 100];
+    let showCount = Math.max(5, Math.ceil(count * 0.4));
+    let start = Math.max(0, ((count - showCount) / count) * 100);
+    return [start, 100];
+}
+
 // 净资产趋势 & 环比
 function renderNetAsset(data) {
     const changes = data.changes.map(v => v === null ? null : v);
+    const range = defaultRange(data.dates.length);
     chart.setOption({
         backgroundColor: 'transparent',
         tooltip: {
@@ -58,8 +71,8 @@ function renderNetAsset(data) {
                 return s;
             }
         },
-        legend: { data: ['净资产', '环比变化'], textStyle: { color: TEXT_DIM }, top: 0 },
-        grid: { left: 55, right: 45, top: 35, bottom: 60 },
+        legend: { data: ['净资产', '环比变化'], textStyle: { color: TEXT_DIM }, top: 0, itemWidth: 12, itemHeight: 8 },
+        grid: { left: 48, right: 38, top: 30, bottom: 45 },
         xAxis: {
             type: 'category', data: data.dates,
             axisLabel: { color: TEXT_DIM, fontSize: 10 },
@@ -67,21 +80,21 @@ function renderNetAsset(data) {
         },
         yAxis: [
             {
-                type: 'value', name: '净资产',
+                type: 'value', name: '',
                 axisLabel: { color: TEXT_DIM, fontSize: 10, formatter: v => (v/10000).toFixed(0) + '万' },
                 splitLine: { lineStyle: { color: BORDER } },
                 axisLine: { show: false }
             },
             {
-                type: 'value', name: '环比',
+                type: 'value', name: '',
                 axisLabel: { color: TEXT_DIM, fontSize: 10, formatter: v => (v/1000).toFixed(0) + 'k' },
                 splitLine: { show: false },
                 axisLine: { show: false }
             }
         ],
         dataZoom: [
-            { type: 'inside', start: 0, end: 100 },
-            { type: 'slider', start: 0, end: 100, height: 20, bottom: 10, borderColor: BORDER, fillerColor: 'rgba(74,222,128,0.15)', handleStyle: { color: '#4ade80' }, textStyle: { color: TEXT_DIM, fontSize: 9 } }
+            { type: 'inside', start: range[0], end: range[1] },
+            { type: 'slider', start: range[0], end: range[1], height: 18, bottom: 8, borderColor: BORDER, fillerColor: 'rgba(74,222,128,0.15)', handleStyle: { color: '#4ade80' }, textStyle: { color: TEXT_DIM, fontSize: 9 } }
         ],
         series: [
             {
@@ -107,6 +120,7 @@ function renderStack(data, kind) {
     const names = kind === 'asset' ? data.assetNames : data.liabNames;
     const allValues = kind === 'asset' ? data.assetValues : data.liabValues;
     const colors = kind === 'asset' ? ASSET_COLORS : LIAB_COLORS;
+    const range = defaultRange(data.dates.length);
 
     const series = names.map((name, i) => ({
         name: name, type: 'line', stack: 'total', smooth: true, symbol: 'none',
@@ -135,8 +149,8 @@ function renderStack(data, kind) {
                 return s;
             }
         },
-        legend: { data: names, textStyle: { color: TEXT_DIM, fontSize: 10 }, top: 0, type: 'scroll' },
-        grid: { left: 55, right: 25, top: 50, bottom: 60 },
+        legend: { data: names, textStyle: { color: TEXT_DIM, fontSize: 10 }, top: 0, type: 'scroll', itemWidth: 10, itemHeight: 7 },
+        grid: { left: 48, right: 20, top: 45, bottom: 45 },
         xAxis: {
             type: 'category', data: data.dates,
             axisLabel: { color: TEXT_DIM, fontSize: 10 },
@@ -149,8 +163,8 @@ function renderStack(data, kind) {
             axisLine: { show: false }
         },
         dataZoom: [
-            { type: 'inside', start: 0, end: 100 },
-            { type: 'slider', start: 0, end: 100, height: 20, bottom: 10, borderColor: BORDER, fillerColor: 'rgba(96,165,250,0.15)', handleStyle: { color: '#60a5fa' }, textStyle: { color: TEXT_DIM, fontSize: 9 } }
+            { type: 'inside', start: range[0], end: range[1] },
+            { type: 'slider', start: range[0], end: range[1], height: 18, bottom: 8, borderColor: BORDER, fillerColor: 'rgba(96,165,250,0.15)', handleStyle: { color: '#60a5fa' }, textStyle: { color: TEXT_DIM, fontSize: 9 } }
         ],
         series: series
     }, true);

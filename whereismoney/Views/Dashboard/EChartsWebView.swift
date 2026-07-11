@@ -6,6 +6,7 @@ import WebKit
 struct EChartsWebView: UIViewRepresentable {
     let chartType: ChartType
     let data: EChartsData
+    var fullscreen: Bool = false
 
     enum ChartType: String {
         case netAsset    // 净资产趋势 & 环比
@@ -44,7 +45,8 @@ struct EChartsWebView: UIViewRepresentable {
 
     private func loadChart(webView: WKWebView) {
         let jsonData = data.toJSON()
-        let js = "renderChart('\(chartType.rawValue)', \(jsonData));"
+        let fs = fullscreen ? "true" : "false"
+        let js = "renderChart('\(chartType.rawValue)', \(jsonData), \(fs));"
         webView.evaluateJavaScript(js) { _, error in
             if let error {
                 print("ECharts 渲染错误: \(error)")

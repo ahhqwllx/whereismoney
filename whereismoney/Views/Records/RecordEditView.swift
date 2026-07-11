@@ -214,11 +214,11 @@ struct RecordEditView: View {
             // 金额输入框
             HStack(spacing: 2) {
                 if type == .liability {
-                    Text("¥")
+                    Text("-¥")
                         .font(.system(size: 13))
                         .foregroundStyle(AppTheme.textDim)
                 }
-                TextField("0", text: bindingFor(account.id))
+                TextField("0", text: bindingFor(account))
                     .keyboardType(.decimalPad)
                     .multilineTextAlignment(.trailing)
                     .font(.system(size: 16, weight: .medium, design: .rounded))
@@ -241,10 +241,25 @@ struct RecordEditView: View {
 
     // MARK: - 数据加载与保存
 
-    private func bindingFor(_ id: UUID) -> Binding<String> {
+    private func bindingFor(_ account: Account) -> Binding<String> {
         Binding(
-            get: { inputValues[id] ?? "" },
-            set: { inputValues[id] = $0 }
+            get: {
+                // 负债类型：去掉存储值中的负号，只显示数字（前缀 -¥ 已表示负数）
+                let raw = inputValues[account.id] ?? ""
+                if account.type == .liability && raw.hasPrefix("-") {
+                    return String(raw.dropFirst())
+                }
+                return raw
+            },
+            set: { newValue in
+                if account.type == .liability {
+                    // 负债类型：去掉用户可能输入的负号，统一存储为纯数字（前缀 -¥ 已表示负数）
+                    let trimmed = newValue.trimmingCharacters(in: .whitespaces)
+                    inputValues[account.id] = trimmed.hasPrefix("-") ? String(trimmed.dropFirst()) : trimmed
+                } else {
+                    inputValues[account.id] = newValue
+                }
+            }
         )
     }
 

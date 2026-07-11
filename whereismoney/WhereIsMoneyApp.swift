@@ -13,6 +13,7 @@ struct WhereIsMoneyApp: App {
     init() {
         do {
             // 配置 SwiftData：存储到 App Group 共享目录
+            // 注意：iCloud 同步需要付费开发者计划，当前暂未启用
             let config = ModelConfiguration(
                 url: AppConstants.sharedStoreURL
             )

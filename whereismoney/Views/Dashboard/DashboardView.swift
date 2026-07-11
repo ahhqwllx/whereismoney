@@ -106,7 +106,7 @@ struct EChartCard: View {
             }
 
             EChartsWebView(chartType: chartType, data: data)
-                .frame(height: 340)
+                .frame(height: 260)
         }
         .padding(16)
         .background(AppTheme.card)

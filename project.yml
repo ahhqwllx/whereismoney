@@ -1,0 +1,85 @@
+name: FinanceApp
+options:
+  bundleIdPrefix: com.wllx
+  deploymentTarget:
+    iOS: "17.0"
+  developmentLanguage: zh-Hans
+  groupSortPosition: top
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    DEVELOPMENT_TEAM: "S4XZC6528L"
+    CODE_SIGN_STYLE: Automatic
+    CODE_SIGNING_REQUIRED: YES
+    CODE_SIGNING_ALLOWED: YES
+
+targets:
+  # 主 App
+  FinanceApp:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: FinanceApp
+        excludes:
+          - "Info.plist"
+          - "Assets.xcassets/**"
+    info:
+      path: FinanceApp/Info.plist
+      properties:
+        CFBundleDisplayName: 财务分析
+        CFBundleShortVersionString: "1.0.0"
+        CFBundleVersion: "1"
+        UILaunchScreen:
+          UIColorName: LaunchBackground
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIBackgroundModes:
+          - remote-notification
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.wllx.app
+        PRODUCT_NAME: FinanceApp
+        TARGETED_DEVICE_FAMILY: "1"
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: FinanceApp/Info.plist
+        ENABLE_PREVIEWS: YES
+        SWIFT_EMIT_LOC_STRINGS: YES
+
+  # 小组件 Extension
+  FinanceWidget:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: FinanceWidget
+        excludes:
+          - "Info.plist"
+      # 共享主 App 的模型文件，使 Widget 能读取 SwiftData 共享存储
+      - path: FinanceApp/Models
+      - path: FinanceApp/Utils/AppConstants.swift
+    info:
+      path: FinanceWidget/Info.plist
+      properties:
+        CFBundleDisplayName: 财务概览
+        CFBundleShortVersionString: "1.0.0"
+        CFBundleVersion: "1"
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.wllx.app.FinanceWidget
+        PRODUCT_NAME: FinanceWidget
+        TARGETED_DEVICE_FAMILY: "1"
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: FinanceWidget/Info.plist
+        SKIP_INSTALL: YES
+        SWIFT_EMIT_LOC_STRINGS: YES
+    dependencies:
+      - target: FinanceApp
+        embed: true

@@ -77,41 +77,46 @@ struct StackChartCard: View {
                 }
             }
 
-            Chart(flatData, id: \.name) { item in
-                BarMark(
-                    x: .value("日期", item.date),
-                    y: .value("金额", item.value)
+            ScrollView(.horizontal, showsIndicators: false) {
+                Chart(flatData, id: \.name) { item in
+                    BarMark(
+                        x: .value("日期", item.date),
+                        y: .value("金额", item.value)
+                    )
+                    .position(by: .value("科目", item.order))
+                    .foregroundStyle(colors[item.order % colors.count].opacity(0.85))
+                    .cornerRadius(2)
+                }
+                .chartYAxis {
+                    AxisMarks(position: .leading) { value in
+                        AxisValueLabel {
+                            if let v = value.as(Double.self) {
+                                Text(MoneyFormatter.compact(v))
+                            }
+                        }
+                        .foregroundStyle(AppTheme.textDim)
+                        AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5))
+                            .foregroundStyle(AppTheme.border)
+                    }
+                }
+                .chartXAxis {
+                    AxisMarks { value in
+                        AxisValueLabel {
+                            if let date = value.as(Date.self) {
+                                Text(MoneyFormatter.month(date))
+                            }
+                        }
+                        .foregroundStyle(AppTheme.textDim)
+                    }
+                }
+                .chartLegend(.hidden)
+                .chartPlotStyle {
+                    $0.background(.clear)
+                }
+                .frame(
+                    width: max(CGFloat(points.count) * 50, UIScreen.main.bounds.width - 64),
+                    height: 300
                 )
-                .position(by: .value("科目", item.order))
-                .foregroundStyle(colors[item.order % colors.count].opacity(0.85))
-                .cornerRadius(2)
-            }
-            .chartYAxis {
-                AxisMarks(position: .leading) { value in
-                    AxisValueLabel {
-                        if let v = value.as(Double.self) {
-                            Text(MoneyFormatter.compact(v))
-                        }
-                    }
-                    .foregroundStyle(AppTheme.textDim)
-                    AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5))
-                        .foregroundStyle(AppTheme.border)
-                }
-            }
-            .chartXAxis {
-                AxisMarks { value in
-                    AxisValueLabel {
-                        if let date = value.as(Date.self) {
-                            Text(MoneyFormatter.month(date))
-                        }
-                    }
-                    .foregroundStyle(AppTheme.textDim)
-                }
-            }
-            .chartLegend(.hidden)
-            .frame(height: 300)
-            .chartPlotStyle {
-                $0.background(.clear)
             }
         }
         .padding(16)

@@ -31,7 +31,7 @@ struct SettingsView: View {
                     NavigationLink {
                         AccountsManageView()
                     } label: {
-                        Label("科目管理", systemImage: "list.bullet.indent")
+                        Label("资产类别管理", systemImage: "list.bullet.indent")
                     }
 
                     Button {

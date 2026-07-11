@@ -53,7 +53,7 @@ struct AccountsManageView: View {
         .listStyle(.insetGrouped)
         .scrollContentBackground(.hidden)
         .background(AppTheme.background)
-        .navigationTitle("科目管理")
+        .navigationTitle("资产类别管理")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {

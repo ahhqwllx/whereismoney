@@ -14,17 +14,32 @@ struct DashboardView: View {
                         // KPI 卡片网格
                         KPICardGrid()
 
-                        // 净资产趋势图 + 事件列表
-                        NetAssetChartCard()
+                        // 净资产趋势图（ECharts）
+                        EChartCard(title: "净资产趋势 & 环比变化", subtitle: "折线为净资产，柱状为环比增减，可双指缩放") {
+                            EChartsWebView(
+                                chartType: .netAsset,
+                                data: EChartsData.from(viewModel: viewModel)
+                            )
+                        }
 
                         // 关键事件
                         EventListCard()
 
-                        // 资产构成堆叠图
-                        AssetStackChartCard()
+                        // 资产构成堆叠图（ECharts）
+                        EChartCard(title: "资产构成变化", subtitle: "各类资产堆叠面积图，可双指缩放") {
+                            EChartsWebView(
+                                chartType: .assetStack,
+                                data: EChartsData.from(viewModel: viewModel)
+                            )
+                        }
 
-                        // 负债构成堆叠图
-                        LiabilityStackChartCard()
+                        // 负债构成堆叠图（ECharts）
+                        EChartCard(title: "负债构成变化", subtitle: "各类负债堆叠面积图（绝对值），可双指缩放") {
+                            EChartsWebView(
+                                chartType: .liabStack,
+                                data: EChartsData.from(viewModel: viewModel)
+                            )
+                        }
 
                         // 最新配置饼图
                         AllocationPieCard(
@@ -56,6 +71,35 @@ struct DashboardView: View {
                 viewModel.refresh(context: context)
             }
         }
+    }
+}
+
+/// ECharts 图表卡片 —— 标题 + WebView 图表
+struct EChartCard<Content: View>: View {
+    let title: String
+    let subtitle: String
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.headline)
+                .foregroundStyle(AppTheme.text)
+
+            Text(subtitle)
+                .font(.caption)
+                .foregroundStyle(AppTheme.textDim)
+
+            content
+                .frame(height: 340)
+        }
+        .padding(16)
+        .background(AppTheme.card)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(AppTheme.border, lineWidth: 1)
+        )
     }
 }
 

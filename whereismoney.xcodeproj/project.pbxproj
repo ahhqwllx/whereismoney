@@ -14,6 +14,7 @@
 		3EE579099183E38A00A01DEA /* KPICard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F25C54774E6252EA6932B920 /* KPICard.swift */; };
 		41A6445E8BB812B9CEA46BE4 /* Entry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A093AD677C0B17F0CAE6D02 /* Entry.swift */; };
 		4B00481486A55D54B0CB2E1A /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B74A7FDC4168EC9D097DC47 /* AppConstants.swift */; };
+		5362F70B5225494010DD4657 /* EChartsHTML.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7ABD6C73CE02391DC7C8785 /* EChartsHTML.swift */; };
 		550299CD90164F58C03C3206 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33367D5F228000DDDB339265 /* Assets.xcassets */; };
 		5F038EAF606AA73752FAB73E /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B74A7FDC4168EC9D097DC47 /* AppConstants.swift */; };
 		65DA47AAD4AC23BCDCBAF2CF /* FinanceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0DF5631015C4F67723FAC3C /* FinanceViewModel.swift */; };
@@ -29,6 +30,7 @@
 		A2E172C5BCC6D60D736DF946 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA5C25CB0B2149ABFE46419 /* AppTheme.swift */; };
 		B4BD21CAE2034D8E72CD98A2 /* RecordDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A37C0758CCEC6104DC2FB535 /* RecordDetailView.swift */; };
 		B50E959D5D57FF69F26A2E2B /* Entry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A093AD677C0B17F0CAE6D02 /* Entry.swift */; };
+		B55FFA4BF2D6979300E2ADEE /* EChartsWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A2DF8BA7B230C6C1EF0F06 /* EChartsWebView.swift */; };
 		C005314DA4EDB7DC3D50CA05 /* WhereIsMoneyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90C653D0DDCE25FB8D91DBC8 /* WhereIsMoneyApp.swift */; };
 		C089C05D43EE01D68C5415B7 /* RecordsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5901D8442B11829B91F08214 /* RecordsListView.swift */; };
 		C1AC2F6D7E01CDFEBEA49743 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E328C8EF172498B4DA465CCC /* DashboardView.swift */; };
@@ -68,6 +70,7 @@
 		90C653D0DDCE25FB8D91DBC8 /* WhereIsMoneyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhereIsMoneyApp.swift; sourceTree = "<group>"; };
 		9C0C70AFF8868C6C93627275 /* AllocationPieChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllocationPieChart.swift; sourceTree = "<group>"; };
 		A37C0758CCEC6104DC2FB535 /* RecordDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordDetailView.swift; sourceTree = "<group>"; };
+		A7ABD6C73CE02391DC7C8785 /* EChartsHTML.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EChartsHTML.swift; sourceTree = "<group>"; };
 		A9245A5A07F441E15A9CF661 /* WhereIsMoneyWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = WhereIsMoneyWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B40F47EB9CCE6D760BA7575F /* EventListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventListView.swift; sourceTree = "<group>"; };
 		BF54FEFA948543CF621AD103 /* whereismoney.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = whereismoney.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -75,6 +78,7 @@
 		D7C11806D3C568B0865BEDF4 /* StackCharts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackCharts.swift; sourceTree = "<group>"; };
 		E0DF5631015C4F67723FAC3C /* FinanceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinanceViewModel.swift; sourceTree = "<group>"; };
 		E14CBFE1442BED5239F77E56 /* WhereIsMoneyWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhereIsMoneyWidget.swift; sourceTree = "<group>"; };
+		E2A2DF8BA7B230C6C1EF0F06 /* EChartsWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EChartsWebView.swift; sourceTree = "<group>"; };
 		E328C8EF172498B4DA465CCC /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		EBA5C25CB0B2149ABFE46419 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
 		EC53DB914D2932EB70A37E97 /* NetAssetChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetAssetChart.swift; sourceTree = "<group>"; };
@@ -158,6 +162,8 @@
 			children = (
 				9C0C70AFF8868C6C93627275 /* AllocationPieChart.swift */,
 				E328C8EF172498B4DA465CCC /* DashboardView.swift */,
+				A7ABD6C73CE02391DC7C8785 /* EChartsHTML.swift */,
+				E2A2DF8BA7B230C6C1EF0F06 /* EChartsWebView.swift */,
 				B40F47EB9CCE6D760BA7575F /* EventListView.swift */,
 				F25C54774E6252EA6932B920 /* KPICard.swift */,
 				EC53DB914D2932EB70A37E97 /* NetAssetChart.swift */,
@@ -351,6 +357,8 @@
 				670C5FD13CE7E55F36596519 /* CSVExporter.swift in Sources */,
 				F22621FA555474FBD92E0C42 /* CSVImporter.swift in Sources */,
 				C1AC2F6D7E01CDFEBEA49743 /* DashboardView.swift in Sources */,
+				5362F70B5225494010DD4657 /* EChartsHTML.swift in Sources */,
+				B55FFA4BF2D6979300E2ADEE /* EChartsWebView.swift in Sources */,
 				41A6445E8BB812B9CEA46BE4 /* Entry.swift in Sources */,
 				D1D7B986E7EFD285F261F70F /* EventDetector.swift in Sources */,
 				8474FAB1EB920C4C1DBCC5BD /* EventListView.swift in Sources */,

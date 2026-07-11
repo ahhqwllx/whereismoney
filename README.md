@@ -1,11 +1,11 @@
-# FinanceApp — 个人财务分析 iOS App
+# WhereIsMoney — 个人财务分析 iOS App
 
 基于 HTML 仪表盘的财务分析维度，使用 SwiftUI 原生开发的 iOS 个人财务管理 App。
 
 ## 功能特性
 
 ### 📊 仪表盘
-- 4 个 KPI 卡片：净资产、总资产、总负债、资产负债率（含首期对比）
+- 4 个 KPI 卡片：净资产、资产负债率、总资产、总负债（含首期对比）
 - 净资产趋势折线图 + 环比柱状图（双 Y 轴）
 - 资产构成堆叠面积图、负债构成堆叠面积图
 - 最新资产/负债配置环形饼图
@@ -16,6 +16,7 @@
 - 分组表单录入（资产/负债分组，数字键盘）
 - 实时计算净资产、总资产、总负债、负债率
 - 记录详情页查看单期全部科目
+- 支持编辑日期和数据
 
 ### 📈 周期汇总
 - 按月度/季度/年度聚合
@@ -60,19 +61,19 @@ sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 ### 2. 打开项目
 
 ```bash
-cd /Users/liuxiao/Documents/code/财务分析/FinanceApp
-open FinanceApp.xcodeproj
+cd /Users/liuxiao/Documents/code/财务分析/whereismoney
+open whereismoney.xcodeproj
 ```
 
 ### 3. 配置签名
 
 在 Xcode 中：
-1. 选择 `FinanceApp` target → Signing & Capabilities
+1. 选择 `whereismoney` target → Signing & Capabilities
 2. 勾选 Automatically manage signing
 3. Team 选择你的开发者账号
-4. Bundle Identifier 改成你自己的（如 `com.yourname.financeapp`）
+4. Bundle Identifier 改成你自己的（如 `com.yourname.whereismoney`）
 
-对 `FinanceWidget` target 重复上述步骤。
+对 `WhereIsMoneyWidget` target 重复上述步骤。
 
 ### 4. 运行
 
@@ -82,11 +83,11 @@ open FinanceApp.xcodeproj
 ## 项目结构
 
 ```
-FinanceApp/
+whereismoney/
 ├── project.yml                    # XcodeGen 配置文件
-├── FinanceApp.xcodeproj           # Xcode 项目（由 XcodeGen 生成）
-├── FinanceApp/                    # 主 App
-│   ├── FinanceAppApp.swift        # App 入口
+├── whereismoney.xcodeproj         # Xcode 项目（由 XcodeGen 生成）
+├── whereismoney/                  # 主 App
+│   ├── WhereIsMoneyApp.swift      # App 入口
 │   ├── Models/                    # SwiftData 数据模型
 │   │   ├── Account.swift          # 科目（可自定义）
 │   │   ├── Record.swift           # 财务记录
@@ -104,8 +105,8 @@ FinanceApp/
 │   │   └── AppTheme.swift         # 配色常量
 │   ├── Assets.xcassets            # 图标/颜色资源
 │   └── Info.plist
-├── FinanceWidget/                 # 小组件 Extension
-│   ├── FinanceWidget.swift        # Widget 入口 + 视图
+├── WhereIsMoneyWidget/            # 小组件 Extension
+│   ├── WhereIsMoneyWidget.swift   # Widget 入口 + 视图
 │   └── WidgetSharedConstants.swift
 └── README.md
 ```
@@ -115,10 +116,10 @@ FinanceApp/
 App 默认使用本地 SwiftData 存储。如需多设备同步：
 
 1. 在 [Apple Developer Portal](https://developer.apple.com/account/resources/identifiers/list) 创建 iCloud Container
-2. Xcode 中选择 FinanceApp target → Signing & Capabilities → + Capability
+2. Xcode 中选择 whereismoney target → Signing & Capabilities → + Capability
 3. 添加 **iCloud**，勾选 **CloudKit**
 4. 添加你创建的 iCloud Container
-5. 修改 `FinanceAppApp.swift` 中的 `ModelConfiguration`，添加 CloudKit 配置：
+5. 修改 `WhereIsMoneyApp.swift` 中的 `ModelConfiguration`，添加 CloudKit 配置：
    ```swift
    let config = ModelConfiguration(
        url: AppConstants.sharedStoreURL,
@@ -130,9 +131,9 @@ App 默认使用本地 SwiftData 存储。如需多设备同步：
 
 小组件需要读取主 App 的数据，需配置 App Group：
 
-1. Xcode 中选择 FinanceApp target → Signing & Capabilities → + Capability
-2. 添加 **App Groups**，创建 `group.com.financeapp.shared`
-3. 对 FinanceWidget target 重复上述步骤，勾选同一个 App Group
+1. Xcode 中选择 whereismoney target → Signing & Capabilities → + Capability
+2. 添加 **App Groups**，创建 `group.com.whereismoney.shared`
+3. 对 WhereIsMoneyWidget target 重复上述步骤，勾选同一个 App Group
 4. 两个 target 的 App Group 必须完全一致
 
 ## 重新生成项目文件
@@ -144,7 +145,7 @@ App 默认使用本地 SwiftData 存储。如需多设备同步：
 brew install xcodegen
 
 # 重新生成
-cd /Users/liuxiao/Documents/code/财务分析/FinanceApp
+cd /Users/liuxiao/Documents/code/财务分析/whereismoney
 xcodegen generate
 ```
 
@@ -179,10 +180,10 @@ xcodegen generate
 设置 → 数据管理 → 导出 CSV，生成与 Excel 兼容的 CSV 文件（含 BOM 头）。
 
 ### 导入
-设置 → 数据管理 → 导入 CSV，选择 CSV 文件导入。格式与导出格式一致：
+设置 → 数据管理 → 导入 CSV，选择 CSV 文件导入。支持「清空后全量导入」和「追加导入」两种模式。格式与导出格式一致：
 ```
-日期,招行余额,ESOP,...,总资产,总负债,净资产,环比
-2026-03-16,12451,275000,...,475077,-1038631,-563554,
+日期,招行余额,ESOP,...,招行负债,房贷-商贷,...
+2026-03-16,12451,275000,...,-3535,-570586,...
 ```
 
 ## 首次使用

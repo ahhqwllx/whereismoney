@@ -4,10 +4,10 @@ import Foundation
 enum AppConstants {
     /// App Group 标识（用于主 App 与小组件共享数据）
     /// ⚠️ 需在 Xcode 的 Signing & Capabilities 中添加同名 App Group
-    static let appGroup = "group.com.financeapp.shared"
+    static let appGroup = "group.com.whereismoney.shared"
 
     /// SwiftData 共享存储文件名
-    static let storeFileName = "FinanceApp.store"
+    static let storeFileName = "whereismoney.store"
 
     /// 共享 SwiftData 容器的 URL
     static var sharedStoreURL: URL {
@@ -24,7 +24,7 @@ enum AppConstants {
 
     /// iCloud 容器标识
     /// ⚠️ 需在 Apple Developer Portal 创建并在 Xcode 中启用 CloudKit
-    static let cloudKitContainer = "iCloud.com.financeapp"
+    static let cloudKitContainer = "iCloud.com.whereismoney"
 
     /// 默认大额变动提醒阈值（净资产环比变化超过此值时推送）
     static let defaultAnomalyThreshold: Double = 50_000
@@ -40,5 +40,5 @@ enum AppConstants {
     }
 
     /// 数据变更通知名（记录增删改后发送，触发仪表盘刷新）
-    static let dataChangedNotification = Notification.Name("FinanceAppDataChanged")
+    static let dataChangedNotification = Notification.Name("WhereIsMoneyDataChanged")
 }

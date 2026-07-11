@@ -3,10 +3,10 @@ import Foundation
 /// Widget 共享常量 —— 与主 App 的 AppConstants 保持一致
 /// 此文件仅用于 Widget Extension 编译，不参与主 App 编译
 /// 主 App 的 Account.swift / Record.swift / Entry.swift 会被添加到 Widget target
-/// （在 Xcode 文件检查器的 Target Membership 中勾选 FinanceWidget）
+/// （在 Xcode 文件检查器的 Target Membership 中勾选 WhereIsMoneyWidget）
 enum WidgetAppConstants {
-    static let appGroup = "group.com.financeapp.shared"
-    static let storeFileName = "FinanceApp.store"
+    static let appGroup = "group.com.whereismoney.shared"
+    static let storeFileName = "whereismoney.store"
 
     static var sharedStoreURL: URL {
         guard let containerURL = FileManager.default.containerURL(

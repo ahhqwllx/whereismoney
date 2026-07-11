@@ -1,4 +1,4 @@
-name: FinanceApp
+name: whereismoney
 options:
   bundleIdPrefix: com.wllx
   deploymentTarget:
@@ -20,17 +20,17 @@ settings:
 
 targets:
   # 主 App
-  FinanceApp:
+  whereismoney:
     type: application
     platform: iOS
     deploymentTarget: "17.0"
     sources:
-      - path: FinanceApp
+      - path: whereismoney
         excludes:
           - "Info.plist"
           - "Assets.xcassets/**"
     info:
-      path: FinanceApp/Info.plist
+      path: whereismoney/Info.plist
       properties:
         CFBundleDisplayName: 财务分析
         CFBundleShortVersionString: "1.0.0"
@@ -44,27 +44,27 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.wllx.app
-        PRODUCT_NAME: FinanceApp
+        PRODUCT_NAME: whereismoney
         TARGETED_DEVICE_FAMILY: "1"
         GENERATE_INFOPLIST_FILE: NO
-        INFOPLIST_FILE: FinanceApp/Info.plist
+        INFOPLIST_FILE: whereismoney/Info.plist
         ENABLE_PREVIEWS: YES
         SWIFT_EMIT_LOC_STRINGS: YES
 
   # 小组件 Extension
-  FinanceWidget:
+  WhereIsMoneyWidget:
     type: app-extension
     platform: iOS
     deploymentTarget: "17.0"
     sources:
-      - path: FinanceWidget
+      - path: WhereIsMoneyWidget
         excludes:
           - "Info.plist"
       # 共享主 App 的模型文件，使 Widget 能读取 SwiftData 共享存储
-      - path: FinanceApp/Models
-      - path: FinanceApp/Utils/AppConstants.swift
+      - path: whereismoney/Models
+      - path: whereismoney/Utils/AppConstants.swift
     info:
-      path: FinanceWidget/Info.plist
+      path: WhereIsMoneyWidget/Info.plist
       properties:
         CFBundleDisplayName: 财务概览
         CFBundleShortVersionString: "1.0.0"
@@ -73,13 +73,13 @@ targets:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.wllx.app.FinanceWidget
-        PRODUCT_NAME: FinanceWidget
+        PRODUCT_BUNDLE_IDENTIFIER: com.wllx.app.WhereIsMoneyWidget
+        PRODUCT_NAME: WhereIsMoneyWidget
         TARGETED_DEVICE_FAMILY: "1"
         GENERATE_INFOPLIST_FILE: NO
-        INFOPLIST_FILE: FinanceWidget/Info.plist
+        INFOPLIST_FILE: WhereIsMoneyWidget/Info.plist
         SKIP_INSTALL: YES
         SWIFT_EMIT_LOC_STRINGS: YES
     dependencies:
-      - target: FinanceApp
+      - target: whereismoney
         embed: true

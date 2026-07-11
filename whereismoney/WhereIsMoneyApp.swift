@@ -3,7 +3,7 @@ import SwiftData
 
 /// App 主入口
 @main
-struct FinanceAppApp: App {
+struct WhereIsMoneyApp: App {
     /// SwiftData 容器配置
     /// 使用 App Group 共享存储，使小组件也能读取数据
     let container: ModelContainer

@@ -199,10 +199,31 @@ private struct PeriodSummaryCard: View {
                 metricItem(label: "期末净资产", value: summary.endNet, color: AppTheme.text)
             }
 
-            // 资产/负债均值 —— 资产均值左对齐，负债均值右对齐，整体更协调
-            HStack(spacing: 8) {
-                metricItem(label: "资产均值", value: summary.avgTotalAssets, color: AppTheme.asset, alignment: .leading)
-                metricItem(label: "负债均值", value: summary.avgTotalLiabilities, color: AppTheme.liability, alignment: .trailing)
+            // 资产/负债均值 —— 资产均值左侧，负债均值右侧，中间弹性间距
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("资产均值")
+                        .font(.system(size: 10))
+                        .foregroundStyle(AppTheme.textDim)
+                    Text(MoneyFormatter.money(summary.avgTotalAssets))
+                        .font(.system(size: 13, weight: .medium, design: .rounded))
+                        .foregroundStyle(AppTheme.asset)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                }
+
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 4) {
+                    Text("负债均值")
+                        .font(.system(size: 10))
+                        .foregroundStyle(AppTheme.textDim)
+                    Text(MoneyFormatter.money(summary.avgTotalLiabilities))
+                        .font(.system(size: 13, weight: .medium, design: .rounded))
+                        .foregroundStyle(AppTheme.liability)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                }
             }
         }
         .padding(16)

@@ -40,12 +40,9 @@ function renderChart(type, data, fullscreen) {
     else if (type === 'liabStack') renderStack(data, 'liab');
 }
 
-// 计算默认显示范围：非全屏显示最近 40%，全屏显示全部
+// 默认显示全部数据
 function defaultRange(count) {
-    if (isFullscreen || count <= 8) return [0, 100];
-    let showCount = Math.max(5, Math.ceil(count * 0.4));
-    let start = Math.max(0, ((count - showCount) / count) * 100);
-    return [start, 100];
+    return [0, 100];
 }
 
 // 净资产趋势 & 环比

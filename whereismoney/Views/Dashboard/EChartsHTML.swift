@@ -69,7 +69,7 @@ function renderNetAsset(data) {
             }
         },
         legend: { data: ['净资产', '环比变化'], textStyle: { color: TEXT_DIM }, top: 0, itemWidth: 12, itemHeight: 8 },
-        grid: { left: 48, right: 38, top: 30, bottom: 45 },
+        grid: { left: 48, right: 38, top: 30, bottom: 25 },
         xAxis: {
             type: 'category', data: data.dates,
             axisLabel: { color: TEXT_DIM, fontSize: 10 },
@@ -90,8 +90,7 @@ function renderNetAsset(data) {
             }
         ],
         dataZoom: [
-            { type: 'inside', start: range[0], end: range[1] },
-            { type: 'slider', start: range[0], end: range[1], height: 18, bottom: 8, borderColor: BORDER, fillerColor: 'rgba(74,222,128,0.15)', handleStyle: { color: '#4ade80' }, textStyle: { color: TEXT_DIM, fontSize: 9 } }
+            { type: 'inside', start: range[0], end: range[1] }
         ],
         series: [
             {
@@ -147,7 +146,7 @@ function renderStack(data, kind) {
             }
         },
         legend: { data: names, textStyle: { color: TEXT_DIM, fontSize: 10 }, top: 0, type: 'scroll', itemWidth: 10, itemHeight: 7 },
-        grid: { left: 48, right: 20, top: 45, bottom: 45 },
+        grid: { left: 48, right: 20, top: 45, bottom: 25 },
         xAxis: {
             type: 'category', data: data.dates,
             axisLabel: { color: TEXT_DIM, fontSize: 10 },
@@ -160,8 +159,7 @@ function renderStack(data, kind) {
             axisLine: { show: false }
         },
         dataZoom: [
-            { type: 'inside', start: range[0], end: range[1] },
-            { type: 'slider', start: range[0], end: range[1], height: 18, bottom: 8, borderColor: BORDER, fillerColor: 'rgba(96,165,250,0.15)', handleStyle: { color: '#60a5fa' }, textStyle: { color: TEXT_DIM, fontSize: 9 } }
+            { type: 'inside', start: range[0], end: range[1] }
         ],
         series: series
     }, true);

@@ -14,6 +14,7 @@
 		3EE579099183E38A00A01DEA /* KPICard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F25C54774E6252EA6932B920 /* KPICard.swift */; };
 		41A6445E8BB812B9CEA46BE4 /* Entry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A093AD677C0B17F0CAE6D02 /* Entry.swift */; };
 		4B00481486A55D54B0CB2E1A /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B74A7FDC4168EC9D097DC47 /* AppConstants.swift */; };
+		550299CD90164F58C03C3206 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33367D5F228000DDDB339265 /* Assets.xcassets */; };
 		5F038EAF606AA73752FAB73E /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B74A7FDC4168EC9D097DC47 /* AppConstants.swift */; };
 		65DA47AAD4AC23BCDCBAF2CF /* FinanceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0DF5631015C4F67723FAC3C /* FinanceViewModel.swift */; };
 		66B2FC8D67B1A0F0B923ACF4 /* NetAssetChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC53DB914D2932EB70A37E97 /* NetAssetChart.swift */; };
@@ -55,6 +56,7 @@
 		0FF4EC26B6A0F7DA775C591C /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		21A36E17491FF20DBB57C319 /* EventDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetector.swift; sourceTree = "<group>"; };
 		22DD7519B564215EE86A070D /* MoneyFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoneyFormatter.swift; sourceTree = "<group>"; };
+		33367D5F228000DDDB339265 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		363CD65C998727912EA310B5 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		37B6257CF892737655C991FA /* Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
 		3B74A7FDC4168EC9D097DC47 /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
@@ -211,6 +213,7 @@
 				3DF825DD5530961CA01AA961 /* Utils */,
 				E2CF89B3988F03187E077922 /* ViewModels */,
 				92D38246A6AF1A9D70553631 /* Views */,
+				33367D5F228000DDDB339265 /* Assets.xcassets */,
 				90C653D0DDCE25FB8D91DBC8 /* WhereIsMoneyApp.swift */,
 			);
 			path = whereismoney;
@@ -251,6 +254,7 @@
 			buildConfigurationList = E01192D5DF0CA5E3974675EC /* Build configuration list for PBXNativeTarget "whereismoney" */;
 			buildPhases = (
 				EA76EEFE6AB6CFA71C47E09B /* Sources */,
+				18AE1C4DBC03BA0055B1920B /* Resources */,
 			);
 			buildRules = (
 			);
@@ -303,6 +307,14 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		18AE1C4DBC03BA0055B1920B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				550299CD90164F58C03C3206 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DC6D01803B1652205A3E63C8 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -455,6 +467,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -496,6 +509,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;

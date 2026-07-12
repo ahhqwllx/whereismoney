@@ -41,6 +41,7 @@
 		ED9F03B6E2E2718D8E090518 /* SummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80B3F8753B2C17EC9647489A /* SummaryView.swift */; };
 		F22621FA555474FBD92E0C42 /* CSVImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4599C6E30BA1C8D9BC2E9DB3 /* CSVImporter.swift */; };
 		F8D8B6D95EF50A2CFB4EB328 /* WhereIsMoneyWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E14CBFE1442BED5239F77E56 /* WhereIsMoneyWidget.swift */; };
+		FBA610BEA563CDA137BE8A07 /* AdaptiveLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBBF1725A198E9D31D7F6E6B /* AdaptiveLayout.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,6 +82,7 @@
 		E2A2DF8BA7B230C6C1EF0F06 /* EChartsWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EChartsWebView.swift; sourceTree = "<group>"; };
 		E328C8EF172498B4DA465CCC /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		EBA5C25CB0B2149ABFE46419 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
+		EBBF1725A198E9D31D7F6E6B /* AdaptiveLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveLayout.swift; sourceTree = "<group>"; };
 		EC53DB914D2932EB70A37E97 /* NetAssetChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetAssetChart.swift; sourceTree = "<group>"; };
 		ED3CC8963BF7C927F958B69B /* Record.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Record.swift; sourceTree = "<group>"; };
 		F25C54774E6252EA6932B920 /* KPICard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KPICard.swift; sourceTree = "<group>"; };
@@ -152,6 +154,7 @@
 		634838ED0B21E0DD0BBCA88F /* Theme */ = {
 			isa = PBXGroup;
 			children = (
+				EBBF1725A198E9D31D7F6E6B /* AdaptiveLayout.swift */,
 				EBA5C25CB0B2149ABFE46419 /* AppTheme.swift */,
 			);
 			path = Theme;
@@ -351,6 +354,7 @@
 			files = (
 				D731B20F32E7F0524E6FE497 /* Account.swift in Sources */,
 				679A7C85D0ED5B8994B0E061 /* AccountsManageView.swift in Sources */,
+				FBA610BEA563CDA137BE8A07 /* AdaptiveLayout.swift in Sources */,
 				CFE51B2562015C24E8D2DB69 /* AllocationPieChart.swift in Sources */,
 				4B00481486A55D54B0CB2E1A /* AppConstants.swift in Sources */,
 				A2E172C5BCC6D60D736DF946 /* AppTheme.swift in Sources */,

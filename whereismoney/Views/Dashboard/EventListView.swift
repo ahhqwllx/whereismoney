@@ -3,15 +3,16 @@ import SwiftUI
 /// 关键事件列表 —— 大额变动自动标注
 struct EventListCard: View {
     @Environment(FinanceViewModel.self) private var viewModel
+    var hSizeClass: UserInterfaceSizeClass? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("关键事件")
-                .font(.headline)
+                .font(.system(size: AdaptiveLayout.titleSize(hSizeClass), weight: .semibold))
                 .foregroundStyle(AppTheme.text)
 
             Text("大额变动自动检测")
-                .font(.caption)
+                .font(.system(size: hSizeClass == .regular ? 13 : 11))
                 .foregroundStyle(AppTheme.textDim)
 
             if viewModel.events.isEmpty {
@@ -32,7 +33,7 @@ struct EventListCard: View {
                 }
             }
         }
-        .padding(16)
+        .padding(AdaptiveLayout.cardPadding(hSizeClass))
         .background(AppTheme.card)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(

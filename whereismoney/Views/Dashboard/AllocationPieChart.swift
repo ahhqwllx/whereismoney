@@ -7,15 +7,16 @@ struct AllocationPieCard: View {
     let slices: [FinanceViewModel.PieSlice]
     let colors: [Color]
     let totalLabel: String
+    var hSizeClass: UserInterfaceSizeClass? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
-                .font(.headline)
+                .font(.system(size: AdaptiveLayout.titleSize(hSizeClass), weight: .semibold))
                 .foregroundStyle(AppTheme.text)
 
             Text("合计 \(totalLabel)")
-                .font(.caption)
+                .font(.system(size: hSizeClass == .regular ? 13 : 11))
                 .foregroundStyle(AppTheme.textDim)
 
             if slices.isEmpty {
@@ -27,7 +28,7 @@ struct AllocationPieCard: View {
             } else {
                 DonutChart(slices: slices, colors: colors)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 160)
+                    .frame(height: hSizeClass == .regular ? 220 : 160)
 
                 // 图例列表
                 VStack(alignment: .leading, spacing: 4) {
@@ -35,20 +36,20 @@ struct AllocationPieCard: View {
                         HStack(spacing: 6) {
                             Circle()
                                 .fill(colors[slice.colorIndex % colors.count])
-                                .frame(width: 8, height: 8)
+                                .frame(width: hSizeClass == .regular ? 10 : 8, height: hSizeClass == .regular ? 10 : 8)
                             Text(slice.name)
-                                .font(.system(size: 10))
+                                .font(.system(size: hSizeClass == .regular ? 13 : 10))
                                 .foregroundStyle(AppTheme.textDim)
                             Spacer()
                             Text(percentText(slice))
-                                .font(.system(size: 10, weight: .medium))
+                                .font(.system(size: hSizeClass == .regular ? 13 : 10, weight: .medium))
                                 .foregroundStyle(AppTheme.text)
                         }
                     }
                 }
             }
         }
-        .padding(16)
+        .padding(AdaptiveLayout.cardPadding(hSizeClass))
         .background(AppTheme.card)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(

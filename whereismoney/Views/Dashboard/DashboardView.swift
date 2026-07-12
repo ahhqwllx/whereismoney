@@ -5,6 +5,7 @@ import Charts
 struct DashboardView: View {
     @Environment(FinanceViewModel.self) private var viewModel
     @Environment(\.modelContext) private var context
+    @Environment(\.horizontalSizeClass) private var hSizeClass
 
     var body: some View {
         NavigationStack {
@@ -12,25 +13,27 @@ struct DashboardView: View {
                 if viewModel.hasData {
                     LazyVStack(spacing: 16) {
                         // KPI 卡片网格
-                        KPICardGrid()
+                        KPICardGrid(hSizeClass: hSizeClass)
 
                         // 净资产趋势图（ECharts）
                         EChartCard(
                             title: "净资产趋势 & 环比变化",
                             subtitle: "折线为净资产，柱状为环比增减，可双指缩放",
                             chartType: .netAsset,
-                            data: EChartsData.from(viewModel: viewModel)
+                            data: EChartsData.from(viewModel: viewModel),
+                            hSizeClass: hSizeClass
                         )
 
                         // 关键事件
-                        EventListCard()
+                        EventListCard(hSizeClass: hSizeClass)
 
                         // 资产构成堆叠图（ECharts）
                         EChartCard(
                             title: "资产构成变化",
                             subtitle: "各类资产堆叠面积图，可双指缩放",
                             chartType: .assetStack,
-                            data: EChartsData.from(viewModel: viewModel)
+                            data: EChartsData.from(viewModel: viewModel),
+                            hSizeClass: hSizeClass
                         )
 
                         // 负债构成堆叠图（ECharts）
@@ -38,7 +41,8 @@ struct DashboardView: View {
                             title: "负债构成变化",
                             subtitle: "各类负债堆叠面积图（绝对值），可双指缩放",
                             chartType: .liabStack,
-                            data: EChartsData.from(viewModel: viewModel)
+                            data: EChartsData.from(viewModel: viewModel),
+                            hSizeClass: hSizeClass
                         )
 
                         // 最新配置饼图
@@ -46,18 +50,21 @@ struct DashboardView: View {
                             title: "最新资产配置",
                             slices: viewModel.latestAssetPie,
                             colors: AppTheme.assetColors,
-                            totalLabel: MoneyFormatter.money(viewModel.kpi?.totalAsset)
+                            totalLabel: MoneyFormatter.money(viewModel.kpi?.totalAsset),
+                            hSizeClass: hSizeClass
                         )
 
                         AllocationPieCard(
                             title: "最新负债构成",
                             slices: viewModel.latestLiabilityPie,
                             colors: AppTheme.liabilityColors,
-                            totalLabel: MoneyFormatter.money(viewModel.kpi?.totalLiab)
+                            totalLabel: MoneyFormatter.money(viewModel.kpi?.totalLiab),
+                            hSizeClass: hSizeClass
                         )
                     }
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, AdaptiveLayout.horizontalPadding(hSizeClass))
                     .padding(.bottom, 32)
+                    .frame(maxWidth: hSizeClass == .regular ? 1000 : .infinity)
                 } else {
                     EmptyStateView()
                         .padding(.top, 100)
@@ -80,6 +87,7 @@ struct EChartCard: View {
     let subtitle: String
     let chartType: EChartsWebView.ChartType
     let data: EChartsData
+    var hSizeClass: UserInterfaceSizeClass? = nil
 
     @State private var showFullscreen = false
 
@@ -89,10 +97,10 @@ struct EChartCard: View {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
-                        .font(.headline)
+                        .font(.system(size: AdaptiveLayout.titleSize(hSizeClass), weight: .semibold))
                         .foregroundStyle(AppTheme.text)
                     Text(subtitle)
-                        .font(.caption)
+                        .font(.system(size: hSizeClass == .regular ? 13 : 11))
                         .foregroundStyle(AppTheme.textDim)
                 }
                 Spacer()
@@ -100,15 +108,15 @@ struct EChartCard: View {
                     showFullscreen = true
                 } label: {
                     Image(systemName: "arrow.up.left.and.arrow.down.right")
-                        .font(.system(size: 14))
+                        .font(.system(size: hSizeClass == .regular ? 18 : 14))
                         .foregroundStyle(AppTheme.textDim)
                 }
             }
 
             EChartsWebView(chartType: chartType, data: data)
-                .frame(height: 260)
+                .frame(height: AdaptiveLayout.chartHeight(hSizeClass))
         }
-        .padding(16)
+        .padding(AdaptiveLayout.cardPadding(hSizeClass))
         .background(AppTheme.card)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(

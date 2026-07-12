@@ -8,74 +8,86 @@ struct DashboardView: View {
     @Environment(\.horizontalSizeClass) private var hSizeClass
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                if viewModel.hasData {
-                    LazyVStack(spacing: 16) {
-                        // KPI 卡片网格
-                        KPICardGrid(hSizeClass: hSizeClass)
-
-                        // 净资产趋势图（ECharts）
-                        EChartCard(
-                            title: "净资产趋势 & 环比变化",
-                            subtitle: "折线为净资产，柱状为环比增减，可双指缩放",
-                            chartType: .netAsset,
-                            data: EChartsData.from(viewModel: viewModel),
-                            hSizeClass: hSizeClass
-                        )
-
-                        // 关键事件
-                        EventListCard(hSizeClass: hSizeClass)
-
-                        // 资产构成堆叠图（ECharts）
-                        EChartCard(
-                            title: "资产构成变化",
-                            subtitle: "各类资产堆叠面积图，可双指缩放",
-                            chartType: .assetStack,
-                            data: EChartsData.from(viewModel: viewModel),
-                            hSizeClass: hSizeClass
-                        )
-
-                        // 负债构成堆叠图（ECharts）
-                        EChartCard(
-                            title: "负债构成变化",
-                            subtitle: "各类负债堆叠面积图（绝对值），可双指缩放",
-                            chartType: .liabStack,
-                            data: EChartsData.from(viewModel: viewModel),
-                            hSizeClass: hSizeClass
-                        )
-
-                        // 最新配置饼图
-                        AllocationPieCard(
-                            title: "最新资产配置",
-                            slices: viewModel.latestAssetPie,
-                            colors: AppTheme.assetColors,
-                            totalLabel: MoneyFormatter.money(viewModel.kpi?.totalAsset),
-                            hSizeClass: hSizeClass
-                        )
-
-                        AllocationPieCard(
-                            title: "最新负债构成",
-                            slices: viewModel.latestLiabilityPie,
-                            colors: AppTheme.liabilityColors,
-                            totalLabel: MoneyFormatter.money(viewModel.kpi?.totalLiab),
-                            hSizeClass: hSizeClass
-                        )
-                    }
-                    .padding(.horizontal, AdaptiveLayout.horizontalPadding(hSizeClass))
-                    .padding(.bottom, 32)
-                } else {
-                    EmptyStateView()
-                        .padding(.top, 100)
+        Group {
+            if hSizeClass == .regular {
+                // iPad：不需要 NavigationStack（SplitView detail 已提供）
+                dashboardContent
+            } else {
+                // iPhone：需要 NavigationStack
+                NavigationStack {
+                    dashboardContent
                 }
             }
-            .background(AppTheme.background.ignoresSafeArea())
-            .scrollContentBackground(.hidden)
-            .navigationTitle("财务仪表盘")
-            .navigationBarTitleDisplayMode(.large)
-            .refreshable {
-                viewModel.refresh(context: context)
+        }
+    }
+
+    private var dashboardContent: some View {
+        ScrollView {
+            if viewModel.hasData {
+                LazyVStack(spacing: 16) {
+                    // KPI 卡片网格
+                    KPICardGrid(hSizeClass: hSizeClass)
+
+                    // 净资产趋势图（ECharts）
+                    EChartCard(
+                        title: "净资产趋势 & 环比变化",
+                        subtitle: "折线为净资产，柱状为环比增减，可双指缩放",
+                        chartType: .netAsset,
+                        data: EChartsData.from(viewModel: viewModel),
+                        hSizeClass: hSizeClass
+                    )
+
+                    // 关键事件
+                    EventListCard(hSizeClass: hSizeClass)
+
+                    // 资产构成堆叠图（ECharts）
+                    EChartCard(
+                        title: "资产构成变化",
+                        subtitle: "各类资产堆叠面积图，可双指缩放",
+                        chartType: .assetStack,
+                        data: EChartsData.from(viewModel: viewModel),
+                        hSizeClass: hSizeClass
+                    )
+
+                    // 负债构成堆叠图（ECharts）
+                    EChartCard(
+                        title: "负债构成变化",
+                        subtitle: "各类负债堆叠面积图（绝对值），可双指缩放",
+                        chartType: .liabStack,
+                        data: EChartsData.from(viewModel: viewModel),
+                        hSizeClass: hSizeClass
+                    )
+
+                    // 最新配置饼图
+                    AllocationPieCard(
+                        title: "最新资产配置",
+                        slices: viewModel.latestAssetPie,
+                        colors: AppTheme.assetColors,
+                        totalLabel: MoneyFormatter.money(viewModel.kpi?.totalAsset),
+                        hSizeClass: hSizeClass
+                    )
+
+                    AllocationPieCard(
+                        title: "最新负债构成",
+                        slices: viewModel.latestLiabilityPie,
+                        colors: AppTheme.liabilityColors,
+                        totalLabel: MoneyFormatter.money(viewModel.kpi?.totalLiab),
+                        hSizeClass: hSizeClass
+                    )
+                }
+                .padding(.horizontal, AdaptiveLayout.horizontalPadding(hSizeClass))
+                .padding(.bottom, 32)
+            } else {
+                EmptyStateView()
+                    .padding(.top, 100)
             }
+        }
+        .background(AppTheme.background.ignoresSafeArea())
+        .scrollContentBackground(.hidden)
+        .navigationTitle("财务仪表盘")
+        .navigationBarTitleDisplayMode(.large)
+        .refreshable {
+            viewModel.refresh(context: context)
         }
     }
 }

@@ -6,6 +6,8 @@ import Charts
 struct SummaryView: View {
     @Query(Record.chronological) private var records: [Record]
 
+    @Environment(\.horizontalSizeClass) private var hSizeClass
+
     @State private var period: Period = .month
 
     enum Period: String, CaseIterable, Identifiable {
@@ -46,42 +48,52 @@ struct SummaryView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                if records.isEmpty {
-                    VStack(spacing: 12) {
-                        Image(systemName: "chart.bar.fill")
-                            .font(.system(size: 50))
-                            .foregroundStyle(AppTheme.textDim)
-                        Text("暂无数据")
-                            .foregroundStyle(AppTheme.textDim)
-                    }
-                    .padding(.top, 100)
-                } else {
-                    VStack(spacing: 16) {
-                        // 周期选择器
-                        Picker("周期", selection: $period) {
-                            ForEach(Period.allCases) { p in
-                                Text(p.rawValue).tag(p)
-                            }
-                        }
-                        .pickerStyle(.segmented)
-
-                        // 净资产变化柱状图
-                        netAssetChangeChart
-
-                        // 周期对比列表
-                        ForEach(summaries) { summary in
-                            PeriodSummaryCard(summary: summary)
-                        }
-                    }
-                    .padding(16)
+        Group {
+            if hSizeClass == .regular {
+                summaryContent
+            } else {
+                NavigationStack {
+                    summaryContent
                 }
             }
-            .background(AppTheme.background)
-            .navigationTitle("周期汇总")
-            .navigationBarTitleDisplayMode(.large)
         }
+    }
+
+    private var summaryContent: some View {
+        ScrollView {
+            if records.isEmpty {
+                VStack(spacing: 12) {
+                    Image(systemName: "chart.bar.fill")
+                        .font(.system(size: 50))
+                        .foregroundStyle(AppTheme.textDim)
+                    Text("暂无数据")
+                        .foregroundStyle(AppTheme.textDim)
+                }
+                .padding(.top, 100)
+            } else {
+                VStack(spacing: 16) {
+                    // 周期选择器
+                    Picker("周期", selection: $period) {
+                        ForEach(Period.allCases) { p in
+                            Text(p.rawValue).tag(p)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+
+                    // 净资产变化柱状图
+                    netAssetChangeChart
+
+                    // 周期对比列表
+                    ForEach(summaries) { summary in
+                        PeriodSummaryCard(summary: summary)
+                    }
+                }
+                .padding(16)
+            }
+        }
+        .background(AppTheme.background)
+        .navigationTitle("周期汇总")
+        .navigationBarTitleDisplayMode(.large)
     }
 
     // MARK: - 净资产变化柱状图

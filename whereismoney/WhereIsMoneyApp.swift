@@ -143,18 +143,20 @@ struct IPadLayout: View {
             .scrollContentBackground(.hidden)
             .background(AppTheme.background)
         } detail: {
-            // 右侧内容区
-            switch selectedItem {
-            case .dashboard:
-                DashboardView()
-            case .records:
-                RecordsListView()
-            case .summary:
-                SummaryView()
-            case .settings:
-                SettingsView()
-            case .none:
-                DashboardView()
+            // 右侧内容区（统一包一层 NavigationStack 提供导航容器）
+            NavigationStack {
+                switch selectedItem {
+                case .dashboard:
+                    DashboardView()
+                case .records:
+                    RecordsListView()
+                case .summary:
+                    SummaryView()
+                case .settings:
+                    SettingsView()
+                case .none:
+                    DashboardView()
+                }
             }
         }
         .navigationSplitViewStyle(.balanced)

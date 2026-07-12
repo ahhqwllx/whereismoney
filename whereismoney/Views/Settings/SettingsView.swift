@@ -23,154 +23,168 @@ struct SettingsView: View {
     @State private var showingImportModeSheet = false
     @State private var pendingCSVText: String?
 
+    @Environment(\.horizontalSizeClass) private var hSizeClass
+
     var body: some View {
-        NavigationStack {
-            Form {
-                // MARK: - 数据管理
-                Section("数据管理") {
-                    NavigationLink {
-                        AccountsManageView()
-                    } label: {
-                        Label("资产类别管理", systemImage: "list.bullet.indent")
-                    }
+        Group {
+            if hSizeClass == .regular {
+                settingsContent
+            } else {
+                NavigationStack {
+                    settingsContent
+                }
+            }
+        }
+    }
 
-                    Button {
-                        exportCSV()
-                    } label: {
-                        Label("导出 CSV", systemImage: "square.and.arrow.up")
-                    }
+    // MARK: - 设置内容
 
-                    Button {
-                        showingFilePicker = true
-                    } label: {
-                        Label("导入 CSV", systemImage: "square.and.arrow.down")
-                    }
-
-                    Button(role: .destructive) {
-                        showingClearConfirm = true
-                    } label: {
-                        Label("清空所有记录", systemImage: "trash")
-                    }
-                    .disabled(records.isEmpty)
+    private var settingsContent: some View {
+        Form {
+            // MARK: - 数据管理
+            Section("数据管理") {
+                NavigationLink {
+                    AccountsManageView()
+                } label: {
+                    Label("资产类别管理", systemImage: "list.bullet.indent")
                 }
 
-                // MARK: - 提醒
-                Section("定期录入提醒") {
-                    Toggle("启用提醒", isOn: $reminderEnabled)
-                        .onChange(of: reminderEnabled) { _, enabled in
-                            if enabled {
-                                NotificationManager.shared.requestAuthorization()
-                                NotificationManager.shared.scheduleReminder(
-                                    weekday: reminderWeekday,
-                                    hour: reminderHour,
-                                    minute: reminderMinute
-                                )
-                            } else {
-                                NotificationManager.shared.cancelReminder()
-                            }
-                        }
-
-                    if reminderEnabled {
-                        Picker("提醒日", selection: $reminderWeekday) {
-                            Text("周日").tag(1)
-                            Text("周一").tag(2)
-                            Text("周二").tag(3)
-                            Text("周三").tag(4)
-                            Text("周四").tag(5)
-                            Text("周五").tag(6)
-                            Text("周六").tag(7)
-                        }
-                        .onChange(of: reminderWeekday) { _, _ in scheduleReminder() }
-
-                        DatePicker("提醒时间", selection: timeBinding, displayedComponents: .hourAndMinute)
-                            .onChange(of: reminderHour) { _, _ in scheduleReminder() }
-                            .onChange(of: reminderMinute) { _, _ in scheduleReminder() }
-                    }
+                Button {
+                    exportCSV()
+                } label: {
+                    Label("导出 CSV", systemImage: "square.and.arrow.up")
                 }
 
-                // MARK: - 大额变动
-                Section("大额变动推送") {
-                    HStack {
-                        Text("净资产环比阈值")
-                        Spacer()
-                        TextField("", value: $anomalyThreshold, format: .number)
-                            .keyboardType(.decimalPad)
-                            .multilineTextAlignment(.trailing)
-                            .frame(width: 100)
-                        Text("元")
-                            .foregroundStyle(AppTheme.textDim)
+                Button {
+                    showingFilePicker = true
+                } label: {
+                    Label("导入 CSV", systemImage: "square.and.arrow.down")
+                }
+
+                Button(role: .destructive) {
+                    showingClearConfirm = true
+                } label: {
+                    Label("清空所有记录", systemImage: "trash")
+                }
+                .disabled(records.isEmpty)
+            }
+
+            // MARK: - 提醒
+            Section("定期录入提醒") {
+                Toggle("启用提醒", isOn: $reminderEnabled)
+                    .onChange(of: reminderEnabled) { _, enabled in
+                        if enabled {
+                            NotificationManager.shared.requestAuthorization()
+                            NotificationManager.shared.scheduleReminder(
+                                weekday: reminderWeekday,
+                                hour: reminderHour,
+                                minute: reminderMinute
+                            )
+                        } else {
+                            NotificationManager.shared.cancelReminder()
+                        }
                     }
-                    Text("当净资产环比变化超过此值时推送通知")
-                        .font(.caption)
+
+                if reminderEnabled {
+                    Picker("提醒日", selection: $reminderWeekday) {
+                        Text("周日").tag(1)
+                        Text("周一").tag(2)
+                        Text("周二").tag(3)
+                        Text("周三").tag(4)
+                        Text("周四").tag(5)
+                        Text("周五").tag(6)
+                        Text("周六").tag(7)
+                    }
+                    .onChange(of: reminderWeekday) { _, _ in scheduleReminder() }
+
+                    DatePicker("提醒时间", selection: timeBinding, displayedComponents: .hourAndMinute)
+                        .onChange(of: reminderHour) { _, _ in scheduleReminder() }
+                        .onChange(of: reminderMinute) { _, _ in scheduleReminder() }
+                }
+            }
+
+            // MARK: - 大额变动
+            Section("大额变动推送") {
+                HStack {
+                    Text("净资产环比阈值")
+                    Spacer()
+                    TextField("", value: $anomalyThreshold, format: .number)
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 100)
+                    Text("元")
+                        .foregroundStyle(AppTheme.textDim)
+                }
+                Text("当净资产环比变化超过此值时推送通知")
+                    .font(.caption)
+                    .foregroundStyle(AppTheme.textDim)
+            }
+
+            // MARK: - 关于
+            Section("关于") {
+                HStack {
+                    Label("版本", systemImage: "info.circle")
+                    Spacer()
+                    Text("1.0.0")
                         .foregroundStyle(AppTheme.textDim)
                 }
 
-                // MARK: - 关于
-                Section("关于") {
-                    HStack {
-                        Label("版本", systemImage: "info.circle")
-                        Spacer()
-                        Text("1.0.0")
-                            .foregroundStyle(AppTheme.textDim)
-                    }
-
-                    Link(destination: URL(string: "https://developer.apple.com/icloud/cloudkit/")!) {
-                        Label("CloudKit 文档", systemImage: "icloud")
-                    }
+                Link(destination: URL(string: "https://developer.apple.com/icloud/cloudkit/")!) {
+                    Label("CloudKit 文档", systemImage: "icloud")
                 }
             }
-            .scrollContentBackground(.hidden)
-            .background(AppTheme.background)
-            .navigationTitle("设置")
-            .navigationBarTitleDisplayMode(.large)
-            .sheet(isPresented: $showingImportResult) {
-                if let result = importResult {
-                    ImportResultSheet(result: result)
-                }
+        }
+        .scrollContentBackground(.hidden)
+        .background(AppTheme.background)
+        .navigationTitle("设置")
+        .navigationBarTitleDisplayMode(.large)
+        .sheet(isPresented: $showingImportResult) {
+            if let result = importResult {
+                ImportResultSheet(result: result)
             }
-            .sheet(isPresented: $showingExportSuccess) {
-                if let url = exportURL {
-                    ShareSheet(items: [url])
-                }
+        }
+        .sheet(isPresented: $showingExportSuccess) {
+            if let url = exportURL {
+                ShareSheet(items: [url])
             }
-            .confirmationDialog(
-                "导入 CSV",
-                isPresented: $showingImportModeSheet,
-                titleVisibility: .visible
-            ) {
-                Button("清空后全量导入") {
-                    performImport(clearFirst: true)
-                }
-                Button("追加导入") {
-                    performImport(clearFirst: false)
-                }
-                Button("取消", role: .cancel) {}
-            } message: {
-                if records.isEmpty {
-                    Text("将导入 \(pendingCSVText.map { countCSVLines($0) } ?? 0) 条记录")
-                } else {
-                    Text("当前有 \(records.count) 条记录。「清空后导入」会删除现有记录再导入；「追加导入」会保留现有记录。")
-                }
+        }
+        .confirmationDialog(
+            "导入 CSV",
+            isPresented: $showingImportModeSheet,
+            titleVisibility: .visible
+        ) {
+            Button("清空后全量导入") {
+                performImport(clearFirst: true)
             }
-            .confirmationDialog(
-                "清空所有记录？",
-                isPresented: $showingClearConfirm,
-                titleVisibility: .visible
-            ) {
-                Button("清空", role: .destructive) {
-                    clearAllRecords()
-                }
-                Button("取消", role: .cancel) {}
-            } message: {
-                Text("这将删除所有 \(records.count) 条财务记录，此操作不可撤销。")
+            Button("追加导入") {
+                performImport(clearFirst: false)
             }
-            .fileImporter(
-                isPresented: $showingFilePicker,
-                allowedContentTypes: [.commaSeparatedText, .text],
-                allowsMultipleSelection: false
-            ) { result in
-                handleFileImport(result)
+            Button("取消", role: .cancel) {}
+        } message: {
+            if records.isEmpty {
+                Text("将导入 \(pendingCSVText.map { countCSVLines($0) } ?? 0) 条记录")
+            } else {
+                Text("当前有 \(records.count) 条记录。「清空后导入」会删除现有记录再导入；「追加导入」会保留现有记录。")
             }
+        }
+        .confirmationDialog(
+            "清空所有记录？",
+            isPresented: $showingClearConfirm,
+            titleVisibility: .visible
+        ) {
+            Button("清空", role: .destructive) {
+                clearAllRecords()
+            }
+            Button("取消", role: .cancel) {}
+        } message: {
+            Text("这将删除所有 \(records.count) 条财务记录，此操作不可撤销。")
+        }
+        .fileImporter(
+            isPresented: $showingFilePicker,
+            allowedContentTypes: [.commaSeparatedText, .text],
+            allowsMultipleSelection: false
+        ) { result in
+            handleFileImport(result)
         }
     }
 

@@ -4,6 +4,7 @@ import SwiftData
 /// 记录列表页 —— 对应 HTML 数据表
 struct RecordsListView: View {
     @Environment(\.modelContext) private var context
+    @Environment(\.horizontalSizeClass) private var hSizeClass
     @Query(Record.reverseChronological) private var records: [Record]
 
     @State private var searchText = ""
@@ -20,59 +21,69 @@ struct RecordsListView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            Group {
-                if records.isEmpty {
-                    EmptyRecordsView()
-                } else {
-                    List {
-                        ForEach(filteredRecords) { record in
-                            NavigationLink {
-                                RecordDetailView(record: record)
-                            } label: {
-                                RecordRow(record: record, allRecords: records)
-                            }
-                            .listRowBackground(AppTheme.card)
-                            .swipeActions(edge: .trailing) {
-                                Button(role: .destructive) {
-                                    deleteRecord(record)
-                                } label: {
-                                    Label("删除", systemImage: "trash")
-                                }
+        Group {
+            if hSizeClass == .regular {
+                recordsContent
+            } else {
+                NavigationStack {
+                    recordsContent
+                }
+            }
+        }
+    }
 
-                                Button {
-                                    editingRecord = record
-                                } label: {
-                                    Label("编辑", systemImage: "pencil")
-                                }
-                                .tint(.blue)
+    private var recordsContent: some View {
+        Group {
+            if records.isEmpty {
+                EmptyRecordsView()
+            } else {
+                List {
+                    ForEach(filteredRecords) { record in
+                        NavigationLink {
+                            RecordDetailView(record: record)
+                        } label: {
+                            RecordRow(record: record, allRecords: records)
+                        }
+                        .listRowBackground(AppTheme.card)
+                        .swipeActions(edge: .trailing) {
+                            Button(role: .destructive) {
+                                deleteRecord(record)
+                            } label: {
+                                Label("删除", systemImage: "trash")
                             }
+
+                            Button {
+                                editingRecord = record
+                            } label: {
+                                Label("编辑", systemImage: "pencil")
+                            }
+                            .tint(.blue)
                         }
                     }
-                    .listStyle(.insetGrouped)
-                    .scrollContentBackground(.hidden)
-                    .background(AppTheme.background)
+                }
+                .listStyle(.insetGrouped)
+                .scrollContentBackground(.hidden)
+                .background(AppTheme.background)
+            }
+        }
+        .navigationTitle("记录")
+        .navigationBarTitleDisplayMode(.large)
+        .searchable(text: $searchText, prompt: "搜索日期，如 2026-05")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showingEdit = true
+                } label: {
+                    Image(systemName: "plus.circle.fill")
+                        .foregroundStyle(AppTheme.netAsset)
                 }
             }
-            .navigationTitle("记录")
-            .navigationBarTitleDisplayMode(.large)
-            .searchable(text: $searchText, prompt: "搜索日期，如 2026-05")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        showingEdit = true
-                    } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .foregroundStyle(AppTheme.netAsset)
-                    }
-                }
-            }
-            .sheet(isPresented: $showingEdit) {
-                RecordEditView()
-            }
-            .sheet(item: $editingRecord) { record in
-                RecordEditView(editingRecord: record)
-            }
+        }
+        .sheet(isPresented: $showingEdit) {
+            RecordEditView()
+        }
+        .sheet(item: $editingRecord) { record in
+            RecordEditView(editingRecord: record)
         }
     }
 

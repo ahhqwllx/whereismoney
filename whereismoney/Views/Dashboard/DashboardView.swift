@@ -64,7 +64,6 @@ struct DashboardView: View {
                     }
                     .padding(.horizontal, AdaptiveLayout.horizontalPadding(hSizeClass))
                     .padding(.bottom, 32)
-                    .frame(maxWidth: hSizeClass == .regular ? 1000 : .infinity)
                 } else {
                     EmptyStateView()
                         .padding(.top, 100)

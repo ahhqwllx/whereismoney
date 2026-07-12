@@ -3,9 +3,9 @@ import SwiftUI
 /// 自适应布局 —— 在 iPad 上自动放大 padding 和字体，不影响 iPhone
 struct AdaptiveLayout {
     /// 根据水平尺寸类别返回内容水平边距
-    /// iPhone（compact）: 16pt，iPad（regular）: 48pt
+    /// iPhone（compact）: 16pt，iPad（regular）: 24pt
     static func horizontalPadding(_ sizeClass: UserInterfaceSizeClass?) -> CGFloat {
-        sizeClass == .regular ? 48 : 16
+        sizeClass == .regular ? 24 : 16
     }
 
     /// 卡片内边距

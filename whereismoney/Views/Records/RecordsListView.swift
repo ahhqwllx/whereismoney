@@ -4,7 +4,6 @@ import SwiftData
 /// 记录列表页 —— 对应 HTML 数据表
 struct RecordsListView: View {
     @Environment(\.modelContext) private var context
-    @Environment(\.horizontalSizeClass) private var hSizeClass
     @Query(Record.reverseChronological) private var records: [Record]
 
     @State private var searchText = ""
@@ -21,14 +20,8 @@ struct RecordsListView: View {
     }
 
     var body: some View {
-        Group {
-            if hSizeClass == .regular {
-                recordsContent
-            } else {
-                NavigationStack {
-                    recordsContent
-                }
-            }
+        NavigationStack {
+            recordsContent
         }
     }
 

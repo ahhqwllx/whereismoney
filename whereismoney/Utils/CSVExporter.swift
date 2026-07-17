@@ -56,12 +56,17 @@ enum CSVExporter {
         return "\u{FEFF}" + lines.joined(separator: "\n")
     }
 
-    /// 导出为临时文件，返回文件 URL
-    static func exportToFile(records: [Record], accounts: [Account]) -> URL {
+    /// 导出为临时文件，返回文件 URL（写入失败返回 nil）
+    static func exportToFile(records: [Record], accounts: [Account]) -> URL? {
         let csv = export(records: records, accounts: accounts)
         let tempURL = FileManager.default.temporaryDirectory
-            .appendingPathComponent("财务状况_\(MoneyFormatter.date(.now)).csv")
-        try? csv.data(using: .utf8)?.write(to: tempURL)
-        return tempURL
+            .appendingPathComponent("finance_export_\(MoneyFormatter.date(.now)).csv")
+        do {
+            try csv.data(using: .utf8)?.write(to: tempURL)
+            return tempURL
+        } catch {
+            print("CSV 导出失败: \(error)")
+            return nil
+        }
     }
 }

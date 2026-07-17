@@ -44,7 +44,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.wllx.app
         PRODUCT_NAME: whereismoney
-        TARGETED_DEVICE_FAMILY: "1,2"
+        TARGETED_DEVICE_FAMILY: "1"
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: whereismoney/Info.plist
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
@@ -76,7 +76,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.wllx.app.WhereIsMoneyWidget
         PRODUCT_NAME: WhereIsMoneyWidget
-        TARGETED_DEVICE_FAMILY: "1,2"
+        TARGETED_DEVICE_FAMILY: "1"
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: WhereIsMoneyWidget/Info.plist
         SKIP_INSTALL: YES

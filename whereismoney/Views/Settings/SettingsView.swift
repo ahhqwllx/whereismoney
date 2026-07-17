@@ -15,25 +15,17 @@ struct SettingsView: View {
     @AppStorage(AppConstants.UserDefaultsKey.anomalyThreshold) private var anomalyThreshold = AppConstants.defaultAnomalyThreshold
 
     @State private var showingFilePicker = false
-    @State private var showingExportSuccess = false
     @State private var showingImportResult = false
     @State private var importResult: CSVImporter.ImportResult?
-    @State private var exportURL: URL?
+    @State private var exportURL: ExportURLWrapper?
     @State private var showingClearConfirm = false
     @State private var showingImportModeSheet = false
     @State private var pendingCSVText: String?
-
-    @Environment(\.horizontalSizeClass) private var hSizeClass
+    @State private var exportError: String?
 
     var body: some View {
-        Group {
-            if hSizeClass == .regular {
-                settingsContent
-            } else {
-                NavigationStack {
-                    settingsContent
-                }
-            }
+        NavigationStack {
+            settingsContent
         }
     }
 
@@ -143,10 +135,8 @@ struct SettingsView: View {
                 ImportResultSheet(result: result)
             }
         }
-        .sheet(isPresented: $showingExportSuccess) {
-            if let url = exportURL {
-                ShareSheet(items: [url])
-            }
+        .sheet(item: $exportURL) { wrapper in
+            ShareSheet(items: [wrapper.url])
         }
         .confirmationDialog(
             "导入 CSV",
@@ -214,9 +204,11 @@ struct SettingsView: View {
     // MARK: - 导入导出
 
     private func exportCSV() {
-        let url = CSVExporter.exportToFile(records: records, accounts: accounts)
-        exportURL = url
-        showingExportSuccess = true
+        guard let url = CSVExporter.exportToFile(records: records, accounts: accounts) else {
+            exportError = "导出失败，请重试"
+            return
+        }
+        exportURL = ExportURLWrapper(url: url)
     }
 
     private func handleFileImport(_ result: Result<[URL], Error>) {
@@ -326,4 +318,11 @@ private struct ShareSheet: UIViewControllerRepresentable {
     }
 
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+}
+
+// MARK: - ExportURLWrapper
+
+private struct ExportURLWrapper: Identifiable {
+    let url: URL
+    var id: String { url.absoluteString }
 }

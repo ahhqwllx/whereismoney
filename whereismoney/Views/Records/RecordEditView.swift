@@ -14,6 +14,8 @@ struct RecordEditView: View {
     @State private var date: Date = .now
     /// 科目ID -> 输入的字符串值
     @State private var inputValues: [UUID: String] = [:]
+    /// 科目ID -> 最新一期参考值（新增模式下用于灰色提示）
+    @State private var previousValues: [UUID: Double] = [:]
     @FocusState private var focusedAccountId: UUID?
 
     private var isNew: Bool { editingRecord == nil }
@@ -52,40 +54,51 @@ struct RecordEditView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 16) {
-                    // 实时净资产卡片
-                    liveNetCard
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(spacing: 16) {
+                        // 实时净资产卡片
+                        liveNetCard
 
-                    // 日期选择
-                    DatePicker("记录日期", selection: $date, displayedComponents: .date)
-                        .datePickerStyle(.compact)
-                        .padding(.horizontal, 16)
+                        // 日期选择
+                        DatePicker("记录日期", selection: $date, displayedComponents: .date)
+                            .datePickerStyle(.compact)
+                            .padding(.horizontal, 16)
 
-                    // 资产分组
-                    accountSection(title: "资产", accounts: assetAccounts, type: .asset)
+                        // 资产分组
+                        accountSection(title: "资产", accounts: assetAccounts, type: .asset)
 
-                    // 负债分组
-                    accountSection(title: "负债", accounts: liabilityAccounts, type: .liability)
+                        // 负债分组
+                        accountSection(title: "负债", accounts: liabilityAccounts, type: .liability)
+                    }
+                    .padding(.bottom, 80)
                 }
-                .padding(.bottom, 80)
-            }
-            .background(AppTheme.background)
-            .navigationTitle(isNew ? "新增记录" : "编辑记录")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("取消") { dismiss() }
-                        .foregroundStyle(AppTheme.textDim)
+                .scrollDismissesKeyboard(.interactively)
+                .background(AppTheme.background)
+                .navigationTitle(isNew ? "新增记录" : "编辑记录")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button("取消") { dismiss() }
+                            .foregroundStyle(AppTheme.textDim)
+                    }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("保存") { save() }
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(AppTheme.netAsset)
+                    }
+                    ToolbarItem(placement: .keyboard) {
+                        Button("完成") {
+                            focusedAccountId = nil
+                        }
+                    }
                 }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("保存") { save() }
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(AppTheme.netAsset)
-                }
-                ToolbarItem(placement: .keyboard) {
-                    Button("完成") {
-                        focusedAccountId = nil
+                .onChange(of: focusedAccountId) { _, newId in
+                    // 键盘弹出时，把当前聚焦的输入框滚动到可视区域中央
+                    if let id = newId {
+                        withAnimation(.easeOut(duration: 0.25)) {
+                            proxy.scrollTo(id, anchor: .center)
+                        }
                     }
                 }
             }
@@ -203,11 +216,21 @@ struct RecordEditView: View {
                 .fill(AppTheme.accentColor(for: type))
                 .frame(width: 6, height: 6)
 
-            Text(account.name)
-                .font(.system(size: 15))
-                .foregroundStyle(AppTheme.text)
-                .lineLimit(1)
-                .fixedSize(horizontal: false, vertical: true)
+            // 科目名 + 上期参考值
+            VStack(alignment: .leading, spacing: 2) {
+                Text(account.name)
+                    .font(.system(size: 15))
+                    .foregroundStyle(AppTheme.text)
+                    .lineLimit(1)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                // 新增模式下，显示最新一期的参考值
+                if isNew, let prev = previousValues[account.id], prev != 0 {
+                    Text("上期 \(MoneyFormatter.money(prev))")
+                        .font(.system(size: 10))
+                        .foregroundStyle(AppTheme.textDim)
+                }
+            }
 
             Spacer(minLength: 8)
 
@@ -231,6 +254,7 @@ struct RecordEditView: View {
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .focused($focusedAccountId, equals: account.id)
         }
+        .id(account.id)
         .padding(.horizontal, 12)
         .padding(.vertical, 4)
         .contentShape(Rectangle())
@@ -265,12 +289,29 @@ struct RecordEditView: View {
 
     private func loadData() {
         if let record = editingRecord {
+            // 编辑模式：加载当前记录的数据
             date = record.date
             for entry in record.entries {
                 if let accountId = entry.account?.id {
                     // 负债存储为负值，输入框显示绝对值
                     inputValues[accountId] = String(format: "%.2f", abs(entry.value))
                 }
+            }
+        } else {
+            // 新增模式：查找日期早于当前 date 的最新一期记录，用于显示参考值
+            loadPreviousValues()
+        }
+    }
+
+    /// 加载最新一期的科目数值作为参考
+    private func loadPreviousValues() {
+        let allRecords = (try? context.fetch(Record.reverseChronological)) ?? []
+        // 找到日期早于当前 date 的第一条记录
+        let prev = allRecords.first { $0.date < date }
+        guard let prev else { return }
+        for entry in prev.entries {
+            if let accountId = entry.account?.id {
+                previousValues[accountId] = entry.value
             }
         }
     }

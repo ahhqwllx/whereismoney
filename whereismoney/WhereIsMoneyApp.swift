@@ -50,37 +50,11 @@ struct WhereIsMoneyApp: App {
     }
 }
 
-/// 主内容视图 —— iPad 用双栏布局，iPhone 用底部 TabView
+/// 主内容视图 —— 底部 TabView
 struct ContentView: View {
     @Environment(FinanceViewModel.self) private var viewModel
     @Environment(\.modelContext) private var context
-    @Environment(\.horizontalSizeClass) private var hSizeClass
 
-    var body: some View {
-        Group {
-            if hSizeClass == .regular {
-                // iPad：双栏侧边导航布局
-                IPadLayout()
-            } else {
-                // iPhone：底部 TabView
-                IPhoneLayout()
-            }
-        }
-        .tint(AppTheme.netAsset)
-        .colorScheme(.dark)
-        .background(AppTheme.background.ignoresSafeArea())
-        .task {
-            viewModel.refresh(context: context)
-        }
-        .onReceive(NotificationCenter.default.publisher(for: AppConstants.dataChangedNotification)) { _ in
-            viewModel.refresh(context: context)
-        }
-    }
-}
-
-// MARK: - iPhone 布局（底部 TabView）
-
-struct IPhoneLayout: View {
     var body: some View {
         TabView {
             DashboardView()
@@ -103,62 +77,14 @@ struct IPhoneLayout: View {
                     Label("设置", systemImage: "gearshape")
                 }
         }
-    }
-}
-
-// MARK: - iPad 布局（左侧边栏导航）
-
-struct IPadLayout: View {
-    enum SidebarItem: String, CaseIterable, Identifiable {
-        case dashboard = "仪表盘"
-        case records = "记录"
-        case summary = "汇总"
-        case settings = "设置"
-
-        var id: String { rawValue }
-
-        var icon: String {
-            switch self {
-            case .dashboard: return "chart.line.uptrend.xyaxis"
-            case .records:   return "list.bullet.rectangle"
-            case .summary:   return "chart.bar.fill"
-            case .settings:  return "gearshape"
-            }
+        .tint(AppTheme.netAsset)
+        .colorScheme(.dark)
+        .background(AppTheme.background.ignoresSafeArea())
+        .task {
+            viewModel.refresh(context: context)
         }
-    }
-
-    @State private var selectedItem: SidebarItem? = .dashboard
-
-    var body: some View {
-        NavigationSplitView {
-            // 左侧边栏
-            List(selection: $selectedItem) {
-                ForEach(SidebarItem.allCases) { item in
-                    Label(item.rawValue, systemImage: item.icon)
-                        .font(.system(size: 17))
-                        .tag(item)
-                }
-            }
-            .navigationTitle("whereismoney")
-            .scrollContentBackground(.hidden)
-            .background(AppTheme.background)
-        } detail: {
-            // 右侧内容区（统一包一层 NavigationStack 提供导航容器）
-            NavigationStack {
-                switch selectedItem {
-                case .dashboard:
-                    DashboardView()
-                case .records:
-                    RecordsListView()
-                case .summary:
-                    SummaryView()
-                case .settings:
-                    SettingsView()
-                case .none:
-                    DashboardView()
-                }
-            }
+        .onReceive(NotificationCenter.default.publisher(for: AppConstants.dataChangedNotification)) { _ in
+            viewModel.refresh(context: context)
         }
-        .navigationSplitViewStyle(.balanced)
     }
 }

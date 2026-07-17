@@ -6,8 +6,6 @@ import Charts
 struct SummaryView: View {
     @Query(Record.chronological) private var records: [Record]
 
-    @Environment(\.horizontalSizeClass) private var hSizeClass
-
     @State private var period: Period = .month
 
     enum Period: String, CaseIterable, Identifiable {
@@ -48,14 +46,8 @@ struct SummaryView: View {
     }
 
     var body: some View {
-        Group {
-            if hSizeClass == .regular {
-                summaryContent
-            } else {
-                NavigationStack {
-                    summaryContent
-                }
-            }
+        NavigationStack {
+            summaryContent
         }
     }
 

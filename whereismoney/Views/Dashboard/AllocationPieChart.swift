@@ -7,16 +7,15 @@ struct AllocationPieCard: View {
     let slices: [FinanceViewModel.PieSlice]
     let colors: [Color]
     let totalLabel: String
-    var hSizeClass: UserInterfaceSizeClass? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
-                .font(.system(size: AdaptiveLayout.titleSize(hSizeClass), weight: .semibold))
+                .font(.headline)
                 .foregroundStyle(AppTheme.text)
 
             Text("合计 \(totalLabel)")
-                .font(.system(size: hSizeClass == .regular ? 13 : 11))
+                .font(.caption)
                 .foregroundStyle(AppTheme.textDim)
 
             if slices.isEmpty {
@@ -26,36 +25,41 @@ struct AllocationPieCard: View {
                     .foregroundStyle(AppTheme.textDim)
                 Spacer()
             } else {
-                DonutChart(slices: slices, colors: colors)
+                DonutChart(slices: sortedSlices, colors: colors)
                     .frame(maxWidth: .infinity)
-                    .frame(height: hSizeClass == .regular ? 220 : 160)
+                    .frame(height: 160)
 
-                // 图例列表
+                // 图例列表（按占比从高到低排序）
                 VStack(alignment: .leading, spacing: 4) {
-                    ForEach(slices) { slice in
+                    ForEach(sortedSlices) { slice in
                         HStack(spacing: 6) {
                             Circle()
                                 .fill(colors[slice.colorIndex % colors.count])
-                                .frame(width: hSizeClass == .regular ? 10 : 8, height: hSizeClass == .regular ? 10 : 8)
+                                .frame(width: 8, height: 8)
                             Text(slice.name)
-                                .font(.system(size: hSizeClass == .regular ? 13 : 10))
+                                .font(.system(size: 10))
                                 .foregroundStyle(AppTheme.textDim)
                             Spacer()
                             Text(percentText(slice))
-                                .font(.system(size: hSizeClass == .regular ? 13 : 10, weight: .medium))
+                                .font(.system(size: 10, weight: .medium))
                                 .foregroundStyle(AppTheme.text)
                         }
                     }
                 }
             }
         }
-        .padding(AdaptiveLayout.cardPadding(hSizeClass))
+        .padding(16)
         .background(AppTheme.card)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(
             RoundedRectangle(cornerRadius: 12)
                 .stroke(AppTheme.border, lineWidth: 1)
         )
+    }
+
+    /// 按占比从高到低排序后的 slices（用于图例和环形图绘制）
+    private var sortedSlices: [FinanceViewModel.PieSlice] {
+        slices.sorted { $0.value > $1.value }
     }
 
     private func percentText(_ slice: FinanceViewModel.PieSlice) -> String {

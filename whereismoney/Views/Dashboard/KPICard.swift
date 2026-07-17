@@ -3,11 +3,10 @@ import SwiftUI
 /// KPI 卡片网格 —— 2×2 布局
 struct KPICardGrid: View {
     @Environment(FinanceViewModel.self) private var viewModel
-    var hSizeClass: UserInterfaceSizeClass? = nil
 
     var body: some View {
         let kpi = viewModel.kpi
-        let spacing: CGFloat = hSizeClass == .regular ? 16 : 12
+        let spacing: CGFloat = 12
         return LazyVGrid(columns: [
             GridItem(.flexible(), spacing: spacing),
             GridItem(.flexible(), spacing: spacing)
@@ -18,8 +17,7 @@ struct KPICardGrid: View {
                 accentColor: AppTheme.netAsset,
                 subText: subTextForNet(kpi),
                 deltaText: deltaTextForNet(kpi),
-                deltaColor: (kpi?.netDelta ?? 0) >= 0 ? AppTheme.positive : AppTheme.negative,
-                hSizeClass: hSizeClass
+                deltaColor: (kpi?.netDelta ?? 0) >= 0 ? AppTheme.positive : AppTheme.negative
             )
 
             KPICard(
@@ -30,24 +28,21 @@ struct KPICardGrid: View {
                 deltaText: kpi.map { MoneyFormatter.pctChange($0.ratioLatest - $0.ratioFirst) },
                 deltaColor: (kpi.map { $0.ratioLatest - $0.ratioFirst } ?? 0) >= 0
                     ? AppTheme.negative
-                    : AppTheme.positive,
-                hSizeClass: hSizeClass
+                    : AppTheme.positive
             )
 
             KPICard(
                 label: "总资产",
                 value: MoneyFormatter.money(kpi?.totalAsset),
                 accentColor: AppTheme.summary,
-                subText: "资产类合计",
-                hSizeClass: hSizeClass
+                subText: "资产类合计"
             )
 
             KPICard(
                 label: "总负债",
                 value: MoneyFormatter.money(kpi?.totalLiab),
                 accentColor: AppTheme.danger,
-                subText: "负债类合计",
-                hSizeClass: hSizeClass
+                subText: "负债类合计"
             )
         }
     }
@@ -71,16 +66,15 @@ struct KPICard: View {
     var subText: String? = nil
     var deltaText: String? = nil
     var deltaColor: Color? = nil
-    var hSizeClass: UserInterfaceSizeClass? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(label)
-                .font(.system(size: AdaptiveLayout.kpiLabelSize(hSizeClass)))
+                .font(.caption)
                 .foregroundStyle(AppTheme.textDim)
 
             Text(value)
-                .font(.system(size: AdaptiveLayout.kpiValueSize(hSizeClass), weight: .bold, design: .rounded))
+                .font(.system(size: 22, weight: .bold, design: .rounded))
                 .foregroundStyle(AppTheme.text)
                 .minimumScaleFactor(0.6)
                 .lineLimit(1)
@@ -89,7 +83,7 @@ struct KPICard: View {
 
             if let subText {
                 Text(subText)
-                    .font(.system(size: AdaptiveLayout.kpiSubSize(hSizeClass)))
+                    .font(.system(size: 10))
                     .foregroundStyle(AppTheme.textDim)
                     .lineLimit(2)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -97,7 +91,7 @@ struct KPICard: View {
 
             if let deltaText, let deltaColor {
                 Text(deltaText)
-                    .font(.system(size: AdaptiveLayout.kpiSubSize(hSizeClass), weight: .medium))
+                    .font(.system(size: 10, weight: .medium))
                     .foregroundStyle(deltaColor)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
@@ -107,7 +101,7 @@ struct KPICard: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .padding(AdaptiveLayout.cardPadding(hSizeClass))
+        .padding(16)
         .background(AppTheme.card)
         .overlay(alignment: .leading) {
             RoundedRectangle(cornerRadius: 10)

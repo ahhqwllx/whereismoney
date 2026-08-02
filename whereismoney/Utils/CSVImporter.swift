@@ -9,39 +9,55 @@ enum CSVImporter {
         var errors: [String]
     }
 
-    /// 解析 CSV 文本并导入到 ModelContext
+    /// CSV 解析结果：包含待确认的新科目和已解析的记录数据
+    struct ParsedCSV {
+        /// CSV 中出现但 App 里还没有的新科目名称（需要用户确认类型）
+        var newAccountNames: [String]
+        /// 已解析的记录数据：每条 = (日期, [科目名: 数值])
+        var records: [(date: Date, values: [String: Double])]
+        var errors: [String]
+    }
+
+    /// 第一步：解析 CSV 文本，识别已有科目和新科目，但不写入数据库
     /// - Parameters:
     ///   - csvText: CSV 文本内容
-    ///   - context: SwiftData ModelContext
-    ///   - existingAccounts: 已有的科目列表（按名称匹配）
-    /// - Returns: 导入结果
-    static func `import`(csvText: String, into context: ModelContext, existingAccounts: [Account]) -> ImportResult {
-        var result = ImportResult(recordsImported: 0, errors: [])
+    ///   - existingAccounts: 已有的科目列表
+    /// - Returns: 解析结果（含新科目名称，需用户确认类型后再执行第二步）
+    static func parse(csvText: String, existingAccounts: [Account]) -> ParsedCSV {
+        var newAccountNames: [String] = []
+        var records: [(date: Date, [String: Double])] = []
+        var errors: [String] = []
 
         // 去除 BOM
         let cleaned = csvText.hasPrefix("\u{FEFF}") ? String(csvText.dropFirst()) : csvText
         let lines = cleaned.components(separatedBy: .newlines).filter { !$0.isEmpty }
 
         guard let headerLine = lines.first else {
-            result.errors.append("CSV 文件为空")
-            return result
+            return ParsedCSV(newAccountNames: [], records: [], errors: ["CSV 文件为空"])
         }
 
         let header = parseCSVLine(headerLine)
         guard header.first == "日期" else {
-            result.errors.append("CSV 格式错误：第一列应为「日期」")
-            return result
+            return ParsedCSV(newAccountNames: [], records: [], errors: ["CSV 格式错误：第一列应为「日期」"])
         }
 
-        // 构建科目名称 → Account 映射
-        let accountMap = Dictionary(existingAccounts.map { ($0.name, $0) }, uniquingKeysWith: { a, _ in a })
+        // 汇总列名称（不是科目，跳过）
+        let summaryColumns: Set<String> = ["总资产", "总负债", "净资产", "环比"]
 
-        // 构建列索引
-        let accountColumns: [(index: Int, account: Account)] = header.enumerated().compactMap { idx, name in
-            if let acc = accountMap[name] {
-                return (idx, acc)
+        // 构建已有科目名称集合
+        let existingNames = Set(existingAccounts.map { $0.name })
+
+        // 构建科目列索引（跳过日期列和汇总列）
+        let accountColumns: [(index: Int, name: String)] = header.enumerated().compactMap { idx, name in
+            if idx == 0 || summaryColumns.contains(name) { return nil }
+            return (idx, name)
+        }
+
+        // 找出新科目
+        for (_, name) in accountColumns {
+            if !existingNames.contains(name) && !newAccountNames.contains(name) {
+                newAccountNames.append(name)
             }
-            return nil
         }
 
         // 解析数据行
@@ -49,24 +65,62 @@ enum CSVImporter {
             let columns = parseCSVLine(line)
             guard columns.count >= 1, let dateStr = columns.first else { continue }
 
-            // 解析日期
             guard let date = parseDate(dateStr) else {
-                result.errors.append("无法解析日期: \(dateStr)")
+                errors.append("无法解析日期: \(dateStr)")
                 continue
             }
 
-            // 创建记录
-            let record = Record(date: date)
-
-            // 解析各科目数值
+            var values: [String: Double] = [:]
             for col in accountColumns {
                 guard col.index < columns.count else { continue }
                 let valueStr = columns[col.index].trimmingCharacters(in: .whitespaces)
-                let value = Double(valueStr) ?? 0
-                let entry = Entry(value: value, account: col.account, record: record)
-                record.entries.append(entry)
+                values[col.name] = Double(valueStr) ?? 0
             }
+            records.append((date, values))
+        }
 
+        return ParsedCSV(newAccountNames: newAccountNames, records: records, errors: errors)
+    }
+
+    /// 第二步：根据解析结果和用户确认的新科目类型，写入数据库
+    /// - Parameters:
+    ///   - parsed: 第一步的解析结果
+    ///   - context: SwiftData ModelContext
+    ///   - existingAccounts: 已有的科目列表
+    ///   - newAccountTypes: 用户为新科目选择的类型（科目名 → 类型）
+    /// - Returns: 导入结果
+    static func importParsed(_ parsed: ParsedCSV, into context: ModelContext, existingAccounts: [Account], newAccountTypes: [String: AccountType]) -> ImportResult {
+        var result = ImportResult(recordsImported: 0, errors: parsed.errors)
+
+        // 构建科目名称 → Account 映射（含新建的科目）
+        var accountMap = Dictionary(existingAccounts.map { ($0.name, $0) }, uniquingKeysWith: { a, _ in a })
+
+        var nextAssetOrder = (existingAccounts.filter { $0.type == .asset }.map { $0.order }.max() ?? -1) + 1
+        var nextLiabOrder = (existingAccounts.filter { $0.type == .liability }.map { $0.order }.max() ?? 99) + 1
+
+        // 创建新科目（默认开启阈值检测，阈值 30000）
+        for name in parsed.newAccountNames {
+            let type = newAccountTypes[name] ?? .asset
+            let order = type == .liability ? nextLiabOrder : nextAssetOrder
+            let newAccount = Account(name: name, type: type, order: order, threshold: EventDetector.defaultThreshold)
+            context.insert(newAccount)
+            accountMap[name] = newAccount
+            if type == .liability {
+                nextLiabOrder += 1
+            } else {
+                nextAssetOrder += 1
+            }
+        }
+
+        // 创建记录
+        for (date, values) in parsed.records {
+            let record = Record(date: date)
+            for (name, value) in values {
+                if let account = accountMap[name] {
+                    let entry = Entry(value: value, account: account, record: record)
+                    record.entries.append(entry)
+                }
+            }
             context.insert(record)
             result.recordsImported += 1
         }

@@ -8,6 +8,8 @@ struct RecordDetailView: View {
 
     @Query(FetchDescriptor<Account>(sortBy: [SortDescriptor(\.order)])) private var accounts: [Account]
     @State private var showingEdit = false
+    /// 科目ID -> 上一期余额参考值
+    @State private var previousValues: [UUID: Double] = [:]
 
     private var assetAccounts: [Account] {
         accounts.filter { $0.type == .asset }
@@ -46,6 +48,22 @@ struct RecordDetailView: View {
         }
         .sheet(isPresented: $showingEdit) {
             RecordEditView(editingRecord: record)
+        }
+        .onAppear { loadPreviousValues() }
+    }
+
+    /// 加载日期早于当前记录的上一期余额参考值
+    private func loadPreviousValues() {
+        previousValues.removeAll()
+
+        let allRecords = (try? context.fetch(Record.reverseChronological)) ?? []
+        // 找到日期早于当前记录的第一条记录
+        let prev = allRecords.first { $0.date < record.date }
+        guard let prev else { return }
+        for entry in prev.entries {
+            if let accountId = entry.account?.id {
+                previousValues[accountId] = entry.value
+            }
         }
     }
 
@@ -113,7 +131,7 @@ struct RecordDetailView: View {
             VStack(spacing: 0) {
                 ForEach(accounts) { account in
                     if let entry = record.entries.first(where: { $0.account?.id == account.id }) {
-                        detailRow(name: account.name, value: entry.value, type: type)
+                        detailRow(account: account, value: entry.value, type: type)
                         if account.id != accounts.last?.id {
                             Divider()
                                 .background(AppTheme.border)
@@ -131,12 +149,24 @@ struct RecordDetailView: View {
         }
     }
 
-    private func detailRow(name: String, value: Double, type: AccountType) -> some View {
+    private func detailRow(account: Account, value: Double, type: AccountType) -> some View {
         HStack {
-            Text(name)
-                .font(.system(size: 14))
-                .foregroundStyle(AppTheme.text)
+            // 科目名 + 上期参考值
+            VStack(alignment: .leading, spacing: 2) {
+                Text(account.name)
+                    .font(.system(size: 14))
+                    .foregroundStyle(AppTheme.text)
+
+                // 显示上一期余额参考值
+                if let prev = previousValues[account.id], prev != 0 {
+                    Text("上期 \(MoneyFormatter.money(prev))")
+                        .font(.system(size: 10))
+                        .foregroundStyle(AppTheme.textDim)
+                }
+            }
+
             Spacer()
+
             Text(MoneyFormatter.money(value))
                 .font(.system(size: 15, weight: .medium, design: .rounded))
                 .foregroundStyle(type == .liability ? AppTheme.liability : AppTheme.asset)

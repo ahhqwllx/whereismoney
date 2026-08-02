@@ -22,6 +22,10 @@ struct SettingsView: View {
     @State private var showingImportModeSheet = false
     @State private var pendingCSVText: String?
     @State private var exportError: String?
+    @State private var pendingParsedCSV: CSVImporter.ParsedCSV?
+    @State private var pendingImportClear: Bool = false
+    @State private var showingNewAccountPicker = false
+    @State private var newAccountTypes: [String: AccountType] = [:]
 
     var body: some View {
         NavigationStack {
@@ -138,6 +142,24 @@ struct SettingsView: View {
         .sheet(item: $exportURL) { wrapper in
             ShareSheet(items: [wrapper.url])
         }
+        .sheet(isPresented: $showingNewAccountPicker) {
+            if let parsed = pendingParsedCSV {
+                NewAccountTypePicker(
+                    accountNames: parsed.newAccountNames,
+                    selectedTypes: $newAccountTypes,
+                    onConfirm: {
+                        executeImport(parsed: parsed, clearFirst: pendingImportClear)
+                        showingNewAccountPicker = false
+                        pendingParsedCSV = nil
+                    },
+                    onCancel: {
+                        showingNewAccountPicker = false
+                        pendingParsedCSV = nil
+                        newAccountTypes = [:]
+                    }
+                )
+            }
+        }
         .confirmationDialog(
             "导入 CSV",
             isPresented: $showingImportModeSheet,
@@ -235,15 +257,32 @@ struct SettingsView: View {
     private func performImport(clearFirst: Bool) {
         guard let csvText = pendingCSVText else { return }
 
+        // 先解析 CSV，检查是否有新科目
+        let parsed = CSVImporter.parse(csvText: csvText, existingAccounts: accounts)
+
+        if parsed.newAccountNames.isEmpty {
+            // 没有新科目，直接导入
+            executeImport(parsed: parsed, clearFirst: clearFirst)
+        } else {
+            // 有新科目，先让用户选择类型
+            pendingParsedCSV = parsed
+            pendingImportClear = clearFirst
+            newAccountTypes = [:]
+            showingNewAccountPicker = true
+        }
+
+        pendingCSVText = nil
+    }
+
+    private func executeImport(parsed: CSVImporter.ParsedCSV, clearFirst: Bool) {
         if clearFirst {
             clearAllRecords()
         }
 
-        let importRes = CSVImporter.`import`(csvText: csvText, into: context, existingAccounts: accounts)
+        let importRes = CSVImporter.importParsed(parsed, into: context, existingAccounts: accounts, newAccountTypes: newAccountTypes)
         try? context.save()
         importResult = importRes
         showingImportResult = true
-        pendingCSVText = nil
 
         NotificationCenter.default.post(name: AppConstants.dataChangedNotification, object: nil)
     }
@@ -325,4 +364,69 @@ private struct ShareSheet: UIViewControllerRepresentable {
 private struct ExportURLWrapper: Identifiable {
     let url: URL
     var id: String { url.absoluteString }
+}
+
+// MARK: - 新科目类型选择器
+
+private struct NewAccountTypePicker: View {
+    let accountNames: [String]
+    @Binding var selectedTypes: [String: AccountType]
+    let onConfirm: () -> Void
+    let onCancel: () -> Void
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("CSV 中检测到 \(accountNames.count) 个新资产类别，请为每个类别选择类型")
+                        .font(.subheadline)
+                        .foregroundStyle(AppTheme.textDim)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    ForEach(accountNames, id: \.self) { name in
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(name)
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundStyle(AppTheme.text)
+
+                            Picker("类型", selection: Binding(
+                                get: { selectedTypes[name] ?? .asset },
+                                set: { selectedTypes[name] = $0 }
+                            )) {
+                                Label("资产", systemImage: "plus.circle.fill")
+                                    .foregroundStyle(AppTheme.asset)
+                                    .tag(AccountType.asset)
+                                Label("负债", systemImage: "minus.circle.fill")
+                                    .foregroundStyle(AppTheme.liability)
+                                    .tag(AccountType.liability)
+                            }
+                            .pickerStyle(.segmented)
+                        }
+                        .padding(16)
+                        .background(AppTheme.card)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(AppTheme.border, lineWidth: 1)
+                        )
+                    }
+                }
+                .padding(16)
+            }
+            .background(AppTheme.background)
+            .navigationTitle("新资产类别")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("取消") { onCancel() }
+                        .foregroundStyle(AppTheme.textDim)
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("确认导入") { onConfirm() }
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(AppTheme.netAsset)
+                }
+            }
+        }
+    }
 }

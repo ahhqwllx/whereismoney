@@ -104,6 +104,10 @@ struct RecordEditView: View {
             }
         }
         .onAppear { loadData() }
+        .onChange(of: date) { _, _ in
+            // 日期变化时重新加载参考值
+            if isNew { loadPreviousValues() }
+        }
     }
 
     // MARK: - 实时净资产卡片
@@ -224,8 +228,8 @@ struct RecordEditView: View {
                     .lineLimit(1)
                     .fixedSize(horizontal: false, vertical: true)
 
-                // 新增模式下，显示最新一期的参考值
-                if isNew, let prev = previousValues[account.id], prev != 0 {
+                // 显示前一次余额参考值（新增和编辑模式都显示）
+                if let prev = previousValues[account.id], prev != 0 {
                     Text("上期 \(MoneyFormatter.money(prev))")
                         .font(.system(size: 10))
                         .foregroundStyle(AppTheme.textDim)
@@ -297,14 +301,16 @@ struct RecordEditView: View {
                     inputValues[accountId] = String(format: "%.2f", abs(entry.value))
                 }
             }
-        } else {
-            // 新增模式：查找日期早于当前 date 的最新一期记录，用于显示参考值
-            loadPreviousValues()
         }
+        // 编辑和新增模式都显示前一次余额参考值
+        loadPreviousValues()
     }
 
     /// 加载最新一期的科目数值作为参考
     private func loadPreviousValues() {
+        // 清空旧数据，确保每次打开都是最新状态
+        previousValues.removeAll()
+
         let allRecords = (try? context.fetch(Record.reverseChronological)) ?? []
         // 找到日期早于当前 date 的第一条记录
         let prev = allRecords.first { $0.date < date }

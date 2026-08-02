@@ -46,24 +46,22 @@ final class Account {
 // MARK: - 预置科目
 
 extension Account {
-    /// 与现有 Excel 一致的默认科目（9 资产 + 5 负债）
+    /// 与现有 Excel 一致的默认科目（7 资产 + 4 负债）
+    /// 所有科目默认开启阈值检测（30000）
     static let defaultAccounts: [(name: String, type: AccountType, threshold: Double?)] = [
         // 资产
-        ("招行余额",     .asset, nil),
-        ("ESOP",        .asset, 10_000),
-        ("家庭存款",     .asset, nil),
-        ("工商银行",     .asset, nil),
-        ("支付宝余额",   .asset, nil),
-        ("微信余额",     .asset, nil),
-        ("小荷包",       .asset, nil),
-        ("美股",         .asset, nil),
-        ("现金",         .asset, nil),
+        ("招行余额",     .asset, 30_000),
+        ("工商银行",     .asset, 30_000),
+        ("支付宝余额",   .asset, 30_000),
+        ("微信余额",     .asset, 30_000),
+        ("小荷包",       .asset, 30_000),
+        ("美股",         .asset, 30_000),
+        ("现金",         .asset, 30_000),
         // 负债
-        ("招行负债",       .liability, nil),
-        ("房贷-商贷",     .liability, nil),
-        ("房贷-公积金贷", .liability, nil),
-        ("车贷",           .liability, nil),
-        ("借款",           .liability, 5_000),
+        ("招行负债",       .liability, 30_000),
+        ("房贷-商贷",     .liability, 30_000),
+        ("房贷-公积金贷", .liability, 30_000),
+        ("车贷",           .liability, 30_000),
     ]
 
     /// 生成预置科目的便捷方法

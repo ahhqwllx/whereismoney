@@ -143,8 +143,8 @@ struct AccountEditSheet: View {
 
     @State private var name = ""
     @State private var type: AccountType = .asset
-    @State private var thresholdEnabled = false
-    @State private var thresholdString = ""
+    @State private var thresholdEnabled = true
+    @State private var thresholdString = "30000"
 
     private var isNew: Bool { editingAccount == nil }
 
@@ -223,6 +223,7 @@ struct AccountEditSheet: View {
             context.insert(account)
         }
         try? context.save()
+        NotificationCenter.default.post(name: AppConstants.dataChangedNotification, object: nil)
         dismiss()
     }
 
@@ -230,6 +231,7 @@ struct AccountEditSheet: View {
         if let account = editingAccount {
             context.delete(account)
             try? context.save()
+            NotificationCenter.default.post(name: AppConstants.dataChangedNotification, object: nil)
         }
         dismiss()
     }

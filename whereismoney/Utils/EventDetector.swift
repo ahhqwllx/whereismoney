@@ -44,9 +44,13 @@ struct FinanceEvent: Identifiable {
 
 /// 事件检测器
 enum EventDetector {
+    /// 所有科目默认的大额变动检测阈值
+    static let defaultThreshold: Double = 30_000
+
     /// 从按日期升序排列的记录中检测大额变动事件
-    /// 逻辑：遍历相邻两期记录，对每个设置了 threshold 的科目比较数值变化
-    ///       若变化绝对值超过 threshold，或科目值从非零变为零（结清），则生成事件
+    /// 逻辑：遍历相邻两期记录，对每个科目比较数值变化
+    ///       优先使用科目自定义阈值，未设置则用默认阈值
+    ///       若变化绝对值超过阈值，或科目值从非零变为零（结清），则生成事件
     static func detect(from records: [Record]) -> [FinanceEvent] {
         guard records.count >= 2 else { return [] }
 
@@ -64,8 +68,10 @@ enum EventDetector {
             }, uniquingKeysWith: { a, _ in a })
 
             for entry in curr.entries {
-                guard let account = entry.account,
-                      let threshold = account.threshold else { continue }
+                guard let account = entry.account else { continue }
+
+                // 优先使用科目自定义阈值，未设置则用默认阈值
+                let threshold = account.threshold ?? defaultThreshold
 
                 let prevValue = prevMap[account.id] ?? 0
                 let currValue = entry.value

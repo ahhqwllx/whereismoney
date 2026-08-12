@@ -5,7 +5,7 @@ import Foundation
 /// 主 App 的 Account.swift / Record.swift / Entry.swift 会被添加到 Widget target
 /// （在 Xcode 文件检查器的 Target Membership 中勾选 WhereIsMoneyWidget）
 enum WidgetAppConstants {
-    static let appGroup = "group.com.whereismoney.shared"
+    static let appGroup = "group.com.yuqingfang.whereismoney.shared"
     static let storeFileName = "whereismoney.store"
 
     static var sharedStoreURL: URL {

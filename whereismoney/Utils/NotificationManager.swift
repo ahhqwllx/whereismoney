@@ -9,8 +9,8 @@ final class NotificationManager {
 
     // MARK: - 通知标识
     enum Identifier: String {
-        case reminder      = "com.whereismoney.reminder"
-        case anomaly       = "com.whereismoney.anomaly"
+        case reminder      = "com.yuqingfang.whereismoney.reminder"
+        case anomaly       = "com.yuqingfang.whereismoney.anomaly"
     }
 
     // MARK: - 权限请求
